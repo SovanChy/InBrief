@@ -2,13 +2,21 @@ import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
 import { initializeApp, getApps, cert } from 'firebase-admin/app'
-import { getAuth } from 'firebase-admin/auth'
+import { getAuth} from 'firebase-admin/auth'
+
+
+
+
+
+
+
+
 
 
 function initFirebase() {
   if (getApps().length === 0) {
     const serviceAccount = JSON.parse(
-      process.env.FIREBASE_SERVICE_ACCOUNT_KEY || '{}'
+      Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_KEY || '', 'base64').toString('utf-8')
     )
     
     initializeApp({
@@ -19,8 +27,12 @@ function initFirebase() {
   return getAuth()
 }
 
+
+
 export async function POST(req: Request) {
   const SIGNING_SECRET = process.env.SIGNING_SECRET
+
+
 
   if (!SIGNING_SECRET) {
     throw new Error('Error: Please add SIGNING_SECRET from Clerk Dashboard to .env or .env')
@@ -69,24 +81,32 @@ export async function POST(req: Request) {
     switch (evt.type) {
       case 'user.created': {
         // Create a new user in Firebase when a user is created in Clerk
-        const { id, email_addresses, username, first_name, last_name, image_url } = evt.data
+        const { id } = evt.data
+
+        
+
+       
         
         // Get primary email if available
-        const primaryEmail = email_addresses?.find(email => email.id === evt.data.primary_email_address_id)
-        const emailAddress = primaryEmail?.email_address
+        // const primaryEmail = email_addresses?.find(email => email.id === evt.data.primary_email_address_id)
+        // const emailAddress = primaryEmail?.email_address
         
-        if (emailAddress) {
-          const userRecord = await auth.createUser({
-            uid: id, // Use Clerk's user ID as Firebase UID for sync
-            email: emailAddress,
-            displayName: username || `${first_name || ''} ${last_name || ''}`.trim() || undefined,
-            photoURL: image_url || undefined,
-          })
-          
-          console.log(`User created in Firebase with UID: ${userRecord.uid}`)
-        } else {
-          console.log(`No email found for user ${id}, skipping Firebase creation`)
-        }
+        //create firebase user on fire authentication tab
+        // if (emailAddress) {
+        //   const userRecord = await auth.createUser({
+        //     uid: id, // Use Clerk's user ID as Firebase UID for sync
+        //     email: emailAddress,
+        //     displayName: username || `${first_name || ''} ${last_name || ''}`.trim() || undefined,
+        //     photoURL: image_url || undefined,
+        //   })
+        
+
+
+        //   console.log(`User created in Firebase with UID: ${id}`)
+        // } else {
+        //   console.log(`No email found for user ${id}, skipping Firebase creation`)
+        // }
+        console.log(`User ${id} created in Firebase`)
         break
       }
       
@@ -107,6 +127,8 @@ export async function POST(req: Request) {
         if (image_url) updateData.photoURL = image_url
         
         await auth.updateUser(id, updateData)
+
+
         console.log(`User ${id} updated in Firebase`)
         break
       }
@@ -125,14 +147,29 @@ export async function POST(req: Request) {
       
       case 'session.created': {
         // Optional: Track when a user signs in via Clerk
-        const { user_id } = evt.data
-        console.log(`Session created for user: ${user_id}`)
+        const { id } = evt.data
+        // if (id){
+        // const additionalClaims = {} // Define additionalClaims as an empty object or with the required claims
+        // try {
+        //   customToken = await auth.createCustomToken(id, additionalClaims)
+        //   console.log(`Session created for user: ${id}`)
+        // } catch (err) {
+        //   console.error('Error creating custom token:', err)
+        // }
+        // }
+        console.log(`Session created for user: ${id}`)
+
         break
       }
       
       case 'session.removed': {
         // Optional: Track when a user signs out of Clerk
         const { user_id } = evt.data
+        try {
+          console.log('User signed out from Firebase')
+        } catch (err) {
+          console.error('Firebase sign-out error:', err)
+        }
         console.log(`Session removed for user: ${user_id}`)
         break
       }
@@ -148,11 +185,15 @@ export async function POST(req: Request) {
 
   
 
-if (evt.type === 'user.created') {
-
-    console.log('userId:', evt.data.id)
-  
-  }
+// For session.created events, return the custom token
+// if (evt.type === 'session.created' && customToken) {
+//   return new Response(JSON.stringify({ customToken }), {
+//     status: 200,
+//     headers: {
+//       'Content-Type': 'application/json'
+//     }
+//   })
+// }
 
   return new Response('Webhook received', { status: 200 })
 } catch (error) {
