@@ -5,8 +5,8 @@ export default function Page() {
     
 
     return (
-        <div className="flex justify-center items-center min-h-screen">
-            <SignUp forceRedirectUrl={"/"}/> {/* Redirect after successful sign-up */}
+        <div className="flex justify-center items-center min-h-screen bg-[#1a2942]">
+            <SignUp/> 
         </div>
     )
 }

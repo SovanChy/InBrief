@@ -1,16 +1,10 @@
-'use client'
-import { SignIn } from '@clerk/nextjs'
-
-
+"use client";
+import { SignIn } from "@clerk/nextjs";
 
 export default function Page() {
-
-   
-
-    return (
-        <div className="flex justify-center items-center min-h-screen">
-            <SignIn forceRedirectUrl={"/"} /> 
-        </div>
-    )
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-[#1a2942]">
+      <SignIn />
+    </div>
+  );
 }
-

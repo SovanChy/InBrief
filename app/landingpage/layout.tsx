@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import {
   SignedIn,
   SignedOut,
+  SignInButton,
+  SignUpButton,
   UserButton,
 } from "@clerk/nextjs";
 import Link from "next/link";
@@ -31,36 +33,39 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-   
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <div className="bg-[#1a2942]">
-            <header className="container mx-auto px-4 py-4 flex justify-between items-center bg-blue">
-              <Link href="/" className="text-white text-2xl font-bold">
-                InBrief
-              </Link>
-              <div className="flex gap-4">
-                <SignedOut>
-                    <Button className="bg-transparent border border-white-500 text-white hover:bg-white/50 ">
-                      <Link href="/sign-in">Sign in</Link>
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      className="bg-white text-black hover:bg-white/50 "
-                    >
-                        <Link href="/sign-up">Sign up</Link>
-                    </Button>
-                </SignedOut>
-                <SignedIn>
-                  <UserButton />
-                </SignedIn>
-              </div>
-            </header>
-          </div>
-          {children}
-        </body>
-      </html>
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <div className="bg-[#1a2942]">
+          <header className="container mx-auto px-4 py-4 flex justify-between items-center bg-blue">
+            <Link href="/" className="text-white text-2xl font-bold">
+              InBrief
+            </Link>
+            <div className="flex gap-4">
+              <SignedOut>
+                <SignInButton>
+                  <Button className="bg-transparent border border-white-500 text-white hover:bg-white/50 " >
+                  Sign In
+                  </Button>
+                </SignInButton>
+                <SignUpButton>
+                  <Button
+                    variant="secondary"
+                    className="bg-white text-black hover:bg-white/50 "
+                  >
+                  Sign Up
+                  </Button>
+                </SignUpButton>
+              </SignedOut>
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+            </div>
+          </header>
+        </div>
+        {children}
+      </body>
+    </html>
   );
 }
