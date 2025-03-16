@@ -23,7 +23,7 @@ import { Facebook, Github, Instagram, Twitter } from "lucide-react"
             Subscribe now for curated news and insights, delivered directly to you.
           </p>
           <Button size="lg" className="bg-[#1a2942] hover:bg-[#1a2942]/90">
-            Join Us Today
+            <Link href="/auth">Join Us Today</Link>
           </Button>
         </div>
       </section>

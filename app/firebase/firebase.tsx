@@ -1,6 +1,6 @@
 'use client'
 import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, Timestamp } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -21,6 +21,10 @@ const db = getFirestore(app);
 //Get firebase auth
 const auth = getAuth(app)
 
+// Timestamp can be used directly from the imported module
+const timestamp = Timestamp;
 
 
-export { db, auth };
+
+
+export { db, auth, app, timestamp };

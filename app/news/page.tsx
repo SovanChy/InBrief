@@ -1,57 +1,31 @@
-'use client'
-import React, { useState } from 'react'
-import { useAuth } from '@clerk/nextjs'
-import { db } from '../firebase/firebase'
-import { doc, getDoc, DocumentData } from 'firebase/firestore'
+// app/news/page.tsx
+import React from 'react';
+import NewsFeed from '@/components/news-feed';
+import { headers } from 'next/headers';
 
-export default function Page() {
-  const { userId } = useAuth()
-  const [data, setData] = useState<DocumentData | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-
-  const getFirestoreData = async () => {
-    if (!userId) {
-      setError('Not authorized')
-      return
+export default async function Page() {
+  try {
+    // Get the host from headers to construct absolute URL
+    const headersList = await headers();
+    const host = headersList.get('host') || 'localhost:3000';
+    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+    
+    // Use absolute URL with proper origin
+    const res = await fetch(`${protocol}://${host}/api/news`, {
+      cache: 'no-store',
+    });
+    
+    if (!res.ok) {
+      throw new Error(`API returned ${res.status}`);
     }
-
-    try {
-      setLoading(true)
-      const docRef = doc(db, 'example', 'example-document')
-      const docSnap = await getDoc(docRef)
-
-      if (docSnap.exists()) {
-        const documentData = docSnap.data()
-        console.log('Document data:', documentData)
-        setData(documentData)
-        setError(null)
-      } else {
-        console.log('No such document!')
-        setError('Document not found')
-      }
-    } catch (err) {
-      console.error('Error fetching document:', err)
-      setError('Failed to fetch document')
-    } finally {
-      setLoading(false)
-    }
+    
+    const articles = await res.json();
+    return (
+      <div>
+        <NewsFeed articles={articles} />
+      </div>
+    );
+  } catch (error) {
+    return <div>Error loading news: {error instanceof Error ? error.message : String(error)}</div>;
   }
-
-  return (
-    <div>
-      <h1>Welcome to News Page</h1>
-      <button onClick={getFirestoreData} disabled={loading}>
-        {loading ? 'Loading...' : 'Get document'}
-      </button>
-      
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      
-      {data && (
-        <div>
-          <h2>{data['example-1']}</h2>
-        </div>
-      )}
-    </div>
-  )
 }
