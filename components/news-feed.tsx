@@ -1,9 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-
 import {
   Bell,
-  BookOpen,
   Clock,
   Filter,
   MessageSquare,
@@ -25,7 +23,7 @@ import { Badge } from "./ui/badge";
 import Image from "next/image";
 import ArticleModal from "./article-modal";
 import CreateCategoryModal from "./create-category-modal";
-
+import SidebarComponent from "./sidebar";
 interface Article {
   title: string;
   url: string;
@@ -40,7 +38,6 @@ interface NewsFeedProps {
 }
 
 export default function NewsFeed({ articles }: NewsFeedProps) {
-  const [activeTab, setActiveTab] = useState("home");
   const [like, setLike] = useState(0);
   const [comment, setComment] = useState(0);
   const [view, setView] = useState(0);
@@ -74,83 +71,9 @@ export default function NewsFeed({ articles }: NewsFeedProps) {
     };
   }, []);
   return (
-    <div className="flex w-full h-screen">
-      {/* Sidebar - Fixed position */}
-      <div className="w-24 bg-blue-950 text-white flex-shrink-0 h-screen">
-        {/* Logo */}
-        <div className="flex justify-center pt-6 pb-8">
-          <h1 className="text-xl font-bold">
-            In<span className="text-blue-400">Brief</span>
-          </h1>
-        </div>
-
-        {/* Navigation Icons */}
-        <nav className="flex flex-col items-center space-y-8">
-          <button
-            className={`p-2 rounded-md ${
-              activeTab === "home" ? "bg-blue-800" : ""
-            }`}
-            onClick={() => setActiveTab("home")}
-          >
-            <BookOpen className="h-6 w-6" />
-          </button>
-          <button
-            className={`p-2 rounded-md ${
-              activeTab === "bookmarks" ? "bg-blue-800" : ""
-            }`}
-            onClick={() => setActiveTab("bookmarks")}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-6 w-6"
-            >
-              <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-            </svg>
-          </button>
-          <button
-            className={`p-2 rounded-md ${
-              activeTab === "history" ? "bg-blue-800" : ""
-            }`}
-            onClick={() => setActiveTab("history")}
-          >
-            <Clock className="h-6 w-6" />
-          </button>
-          <button
-            className={`p-2 rounded-md ${
-              activeTab === "categories" ? "bg-blue-800" : ""
-            }`}
-            onClick={() => setActiveTab("categories")}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-6 w-6"
-            >
-              <rect width="7" height="7" x="3" y="3" rx="1" />
-              <rect width="7" height="7" x="14" y="3" rx="1" />
-              <rect width="7" height="7" x="14" y="14" rx="1" />
-              <rect width="7" height="7" x="3" y="14" rx="1" />
-            </svg>
-          </button>
-        </nav>
-      </div>
-      {/* Main Content - Scrollable area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+  <div className="flex w-full h-screen">
+        <SidebarComponent activeTab="home" setActiveTab={() => {}} />           {/* Main Content - Scrollable area */}
+      <div className="flex-1 flex flex-col overflow-hidden ml-24 p-4">
         {/* Header */}
         <header className="flex items-center justify-between p-4 border-b dark:border-gray-700 bg-white dark:bg-gray-800">
           <Button

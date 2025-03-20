@@ -1,6 +1,6 @@
 'use client'
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { db } from '../firebase';
+import { firestoreDb } from '../firebase';
 import { useAuth } from '@clerk/nextjs'
 
 
@@ -12,10 +12,10 @@ export const AddFireStoreData = (collectionName: string) => {
     const addData = async (document: any) => {
         try{
             const createdAt = serverTimestamp()
-            const docRef = await addDoc(collection(db, collectionName), {
-                ...document,
+            const docRef = await addDoc(collection(firestoreDb, collectionName), {
                 id: userId,
-                createdAt: createdAt
+                createdAt: createdAt,
+                ...document,
             });
             console.log("Document written with ID: ", docRef.id);
         }catch(err){

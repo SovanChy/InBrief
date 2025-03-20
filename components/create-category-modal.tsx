@@ -37,16 +37,16 @@ interface CreateCategoryModalProps {
 
 // Example news sources - replace with your actual sources
 const availableSources = [
-  { value: "cnn", label: "CNN" },
-  { value: "bbc", label: "BBC" },
-  { value: "nyt", label: "New York Times" },
-  { value: "wsj", label: "Wall Street Journal" },
-  { value: "reuters", label: "Reuters" },
-  { value: "ap", label: "Associated Press" },
-  { value: "wapo", label: "Washington Post" },
-  { value: "guardian", label: "The Guardian" },
-  { value: "bloomberg", label: "Bloomberg" },
-  { value: "ft", label: "Financial Times" },
+    { value: "cnn", label: "CNN" },
+    { value: "bbc-news", label: "BBC" },
+    { value: "the-new-york-times", label: "New York Times" },
+    { value: "the-wall-street-journal", label: "Wall Street Journal" },
+    { value: "reuters", label: "Reuters" },
+    { value: "associated-press", label: "Associated Press" },
+    { value: "the-washington-post", label: "Washington Post" },
+    { value: "the-guardian-uk", label: "The Guardian" },
+    { value: "bloomberg", label: "Bloomberg" },
+    { value: "financial-times", label: "Financial Times" },
 ]
 
 export default function CreateCategoryModal({isOpen, onClose, onCreateCategory} : CreateCategoryModalProps)

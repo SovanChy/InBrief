@@ -27,4 +27,6 @@ const timestamp = Timestamp;
 
 
 
-export { db, auth, app, timestamp };
+export const firestoreDb = db;
+export const firebaseAuth = auth;
+export const firebaseTimestamp = timestamp;

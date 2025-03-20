@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react'
 import { useAuth } from '@clerk/nextjs'
-import { db } from '../firebase/firebase'
+import { firestoreDb } from '../firebase/firebase'
 import { doc, getDoc, DocumentData } from 'firebase/firestore'
 
 export default function Page() {
@@ -18,7 +18,7 @@ export default function Page() {
 
     try {
       setLoading(true)
-      const docRef = doc(db, 'example', 'example-document')
+      const docRef = doc(firestoreDb, 'example', 'example-document')
       const docSnap = await getDoc(docRef)
 
       if (docSnap.exists()) {

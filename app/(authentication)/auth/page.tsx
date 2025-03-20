@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { signInWithCustomToken, signOut } from "firebase/auth";
-import { auth, db } from "../../firebase/firebase";
+import { firebaseAuth, firestoreDb} from "../../firebase/firebase";
 import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 
 export default function Page() {
@@ -25,12 +25,12 @@ export default function Page() {
         // Sign in with Firebase
         const token = await getToken({ template: "integration_firebase" });
 
-        const userCredentials = await signInWithCustomToken(auth, token || "");
+        const userCredentials = await signInWithCustomToken(firebaseAuth, token || "");
 
         console.log("User signed in with Firebase", userCredentials);
 
         // Create user document if not signed up yet
-        const userDocRef = doc(db, "users", userCredentials.user.uid);
+        const userDocRef = doc(firestoreDb, "users", userCredentials.user.uid);
         const userDoc = await getDoc(userDocRef);
         if (!userDoc.exists()) {
           await setDoc(userDocRef, {
@@ -56,7 +56,7 @@ export default function Page() {
   useEffect(() => {
     const handleSignOutSuccess = async () => {
       try {
-        await signOut(auth);
+        await signOut(firebaseAuth);
         console.log("User signed out from Firebase");
       } catch (err) {
         console.error("Firebase sign-out error:", err);
@@ -74,11 +74,11 @@ export default function Page() {
     if (isLoaded) {
       if (!userId) {
         router.push("/landingpage");
-      } else {
+      } else if (isSignedIn) {
         router.push("/news");
       }
     }
-  }, [userId, isLoaded, router]);
+  }, [userId, isLoaded, isSignedIn, router]);
 
   // Loading state
   if (!isLoaded) {

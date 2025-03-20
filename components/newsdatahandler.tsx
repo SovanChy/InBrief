@@ -23,7 +23,7 @@ export default function NewsDataHandler({ newsData }: { newsData: any }) {
     }
     
     handleAddData()
-  }, [newsData, addData])
+  }, [])
   
   // This component doesn't need to render anything
   return null
