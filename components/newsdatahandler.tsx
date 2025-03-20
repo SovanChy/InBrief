@@ -5,6 +5,7 @@ import { useEffect } from 'react'
 import { AddFireStoreData } from "../app/firebase/(hooks)/addFireStoreData";
 
 export default function NewsDataHandler({ newsData }: { newsData: any }) {
+ 
   const { addData } = AddFireStoreData('news')
   
   useEffect(() => {

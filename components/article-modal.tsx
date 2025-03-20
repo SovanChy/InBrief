@@ -102,7 +102,8 @@ export default function ArticleModal({ article, isOpen, onClose }: ArticleModalP
             <span className="mx-2">•</span>
             <Clock className="h-4 w-4 mr-1" />
             <span>{article.readTime}</span>
-            <span className="mx-2">•</span>
+          </div>
+          <div className="text-sm text-gray-500 mb-4">
             <span>
               Source:{" "}
               <a href={article.sourceUrl} className="text-blue-500 hover:underline">
