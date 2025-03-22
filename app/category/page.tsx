@@ -30,7 +30,7 @@ import { getFirestoreSnapshot } from "../firebase/(hooks)/getFirestoreSnapsot";
 
 const Category = () => {
   //   const { data } = GetFirestoreData("categoryKeywords");
-  const { data } = getFirestoreSnapshot("categoryKeywords");
+  const { data } = getFirestoreSnapshot("categoryPreferences");
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const router = useRouter();
   const [categories, setCategories] = useState<any[]>([]);
@@ -56,7 +56,7 @@ const Category = () => {
   };
 
   const handleRefreshClick = () => {
-    router.push("/newsfetch");
+    router.push("/newsfetchcategory");
   };
   useEffect(() => {
     if (data && Array.isArray(data)) {

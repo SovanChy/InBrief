@@ -40,13 +40,17 @@ const availableSources = [
     { value: "cnn", label: "CNN" },
     { value: "bbc-news", label: "BBC" },
     { value: "the-new-york-times", label: "New York Times" },
-    { value: "the-wall-street-journal", label: "Wall Street Journal" },
-    { value: "reuters", label: "Reuters" },
-    { value: "associated-press", label: "Associated Press" },
     { value: "the-washington-post", label: "Washington Post" },
     { value: "the-guardian-uk", label: "The Guardian" },
     { value: "bloomberg", label: "Bloomberg" },
-    { value: "financial-times", label: "Financial Times" },
+    { value: "abc-news", label: "ABC News" },
+    { value: "business-insider", label: "Business Insider" },
+    { value: "financial-times", label: "Financial Times" }
+
+
+
+
+
 ]
 
 export default function CreateCategoryModal({isOpen, onClose, onCreateCategory} : CreateCategoryModalProps)
@@ -58,7 +62,7 @@ export default function CreateCategoryModal({isOpen, onClose, onCreateCategory} 
     const [excludeKeyword, setExcludeKeyword] = useState<string>("")
     const [includeKeywords, setIncludeKeywords] = useState<string[]>([])
     const [excludeKeywords, setExcludeKeywords] = useState<string[]>([])
-    const {addData} = AddFireStoreData('categoryKeywords')
+    const {addData} = AddFireStoreData('categoryPreferences')
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()

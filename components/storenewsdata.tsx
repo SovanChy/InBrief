@@ -9,10 +9,11 @@ interface StoreNewsDataProps {
     [key: string]: any;  // Allow for other properties in newsData
   };
   redirectTo?: string;  // Make the redirect optional
+  collectionName: string;
 }
 
-export default function StoreNewsData({ newsData , redirectTo }: StoreNewsDataProps) {
-  const { addData } = AddFireStoreData('news');
+export default function StoreNewsData({ newsData , redirectTo, collectionName }: StoreNewsDataProps) {
+  const { addData } = AddFireStoreData(collectionName);
   const hasStored = useRef(false);
   const router = useRouter(); // Initialize the router
   
