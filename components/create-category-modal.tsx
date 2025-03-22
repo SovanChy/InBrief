@@ -58,7 +58,7 @@ export default function CreateCategoryModal({isOpen, onClose, onCreateCategory} 
     const [excludeKeyword, setExcludeKeyword] = useState<string>("")
     const [includeKeywords, setIncludeKeywords] = useState<string[]>([])
     const [excludeKeywords, setExcludeKeywords] = useState<string[]>([])
-    const {addData} = AddFireStoreData('category')
+    const {addData} = AddFireStoreData('categoryKeywords')
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()

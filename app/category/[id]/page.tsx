@@ -1,11 +1,10 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
-import NewsFeed from '@/components/news-feed';
 import { DocumentData } from "firebase/firestore";
-import getFireStoreDataToday from '../firebase/(hooks)/getFireStoreDataToday';
-import { useNewsData } from '../firebase/useNewsData';
-import { AddFireStoreData } from '../firebase/(hooks)/addFireStoreData';
+import getFireStoreDataToday from '../../firebase/(hooks)/getFireStoreDataToday';
+import CategoryFeed from '@/components/category-feed';
+
 import { Button } from '@/components/ui/button';
 
 export default function Page() {
@@ -41,7 +40,7 @@ export default function Page() {
   return (
     <div>
       {articles ? (
-        <NewsFeed articles={articles} />
+        <CategoryFeed articles={articles} />
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
           <div className="spinner"></div>

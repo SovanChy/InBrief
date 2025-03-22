@@ -38,7 +38,7 @@ interface NewsFeedProps {
   description?: string;
 }
 
-export default function NewsFeed({ articles }: NewsFeedProps) {
+export default function CategoryFeed({ articles }: NewsFeedProps) {
   const [like, setLike] = useState(0);
   const [comment, setComment] = useState(0);
   const [view, setView] = useState(0);
@@ -78,101 +78,97 @@ export default function NewsFeed({ articles }: NewsFeedProps) {
     };
   }, []);
   return (
-  <div className="flex w-full h-screen">
-        <SidebarComponent activeTab="home" setActiveTab={() => {}} />           {/* Main Content - Scrollable area */}
-      <div className="flex-1 flex flex-col overflow-hidden ml-24 p-4">
+<div className="flex w-full h-screen">
+    <SidebarComponent activeTab="categories" setActiveTab={() => {}} /> {/* Main Content - Scrollable area */}
+    <div className="flex-1 flex flex-col overflow-hidden ml-24 p-4">
         {/* Header */}
         <header className="flex items-center justify-between p-4 border-b dark:border-gray-700 bg-white dark:bg-gray-800">
-          <Button
-            variant="default"
-            className="bg-blue-950 hover:bg-blue-900"
-            onClick={() => setIsCategoryModalOpen(true)}
-          >
-            Create Category
-          </Button>
-
-          <div className="relative w-full max-w-md mx-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-            <Input
-              type="text"
-              placeholder="Search"
-              className="pl-10 bg-gray-100 dark:bg-gray-700 border-none"
-            />
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="icon" className="rounded-full" 
-            onClick={() => handleRefreshClick()}>
-              <RefreshCw className="h-5 w-5" />
+            <Button
+                variant="default"
+                className="bg-blue-950 hover:bg-blue-900"
+                onClick={() => setIsCategoryModalOpen(true)}
+            >
+                Create Category
             </Button>
-            
-            <SignedOut>
-              <SignInButton>
-                <Button className="bg-transparent border border-white-500 text-white hover:bg-white/50">
-                  Sign In
+
+            <div className="relative w-full max-w-md mx-4">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                <Input
+                    type="text"
+                    placeholder="Search"
+                    className="pl-10 bg-gray-100 dark:bg-gray-700 border-none"
+                />
+            </div>
+
+            <div className="flex items-center space-x-4">
+                <Button variant="ghost" size="icon" className="rounded-full" onClick={() => handleRefreshClick()}>
+                    <RefreshCw className="h-5 w-5" />
                 </Button>
-              </SignInButton>
-              <SignUpButton>
-                <Button
-                  variant="secondary"
-                  className="bg-white text-black hover:bg-white/50"
-                >
-                  Sign Up
-                </Button>
-              </SignUpButton>
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
-          </div>
+
+                <SignedOut>
+                    <SignInButton>
+                        <Button className="bg-transparent border border-white-500 text-white hover:bg-white/50">
+                            Sign In
+                        </Button>
+                    </SignInButton>
+                    <SignUpButton>
+                        <Button variant="secondary" className="bg-white text-black hover:bg-white/50">
+                            Sign Up
+                        </Button>
+                    </SignUpButton>
+                </SignedOut>
+                <SignedIn>
+                    <UserButton />
+                </SignedIn>
+            </div>
         </header>
 
         {/* Content - Independently scrollable */}
         <main className="flex-1 overflow-y-auto bg-white dark:bg-gray-800 p-6">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h2 className="text-2xl font-bold">Explore</h2>
+            <div className="flex justify-between items-center mb-6">
+                <div>
+                    <h2 className="text-2xl font-bold">Explore</h2>
+                </div>
+                <Button variant="outline" size="sm">
+                    <Filter className="h-4 w-4 mr-2" />
+                    Filter
+                </Button>
             </div>
-            <Button variant="outline" size="sm">
-              <Filter className="h-4 w-4 mr-2" />
-              Filter
-            </Button>
-          </div>
 
-          {/* Trending Section */}
-          <section className="mb-8">
-            <h3 className="text-xl text-gray-500 mb-4">Latest</h3>
+            {/* Trending Section */}
+            <section className="mb-8">
+                <h3 className="text-xl text-gray-500 mb-4">Latest</h3>
 
-            <div className="space-y-6">
-              {articles.map((article, index) => (
-                <ArticleCard
-                  key={index}
-                  image={article.urlToImage || "/placeholder.svg"}
-                  title={article.title}
-                  timePosted={new Date(article.publishedAt).toLocaleString()}
-                  readTime="5 min"
-                  source={article.url}
-                  preview={article.description || "Click to read more..."}
-                  likes="0"
-                  comments="0"
-                  tags={[{ label: "unread", color: "blue" }]}
-                />
-              ))}
-            </div>
-          </section>
+                <div className="space-y-6">
+                    {articles.map((article, index) => (
+                        <ArticleCard
+                            key={index}
+                            image={article.urlToImage || "/placeholder.svg"}
+                            title={article.title}
+                            timePosted={new Date(article.publishedAt).toLocaleString()}
+                            readTime="5 min"
+                            source={article.url}
+                            preview={article.description || "Click to read more..."}
+                            likes="0"
+                            comments="0"
+                            tags={[{ label: "unread", color: "blue" }]}
+                        />
+                    ))}
+                </div>
+            </section>
         </main>
-      </div>
-      <ArticleModal
+    </div>
+    <ArticleModal
         article={selectedArticle}
         isOpen={isArticleModalOpen}
         onClose={() => setIsArticleModalOpen(false)}
-      />
-      <CreateCategoryModal
+    />
+    <CreateCategoryModal
         isOpen={isCategoryModalOpen}
         onClose={() => setIsCategoryModalOpen(false)}
         onCreateCategory={handleCreateCategory}
-      />{" "}
-    </div>
+    />
+</div>
   );
 }
 

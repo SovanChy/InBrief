@@ -13,7 +13,7 @@ export const AddFireStoreData = (collectionName: string) => {
         try{
             const createdAt = serverTimestamp()
             const docRef = await addDoc(collection(firestoreDb, collectionName), {
-                id: userId,
+                // id: userId,
                 createdAt: createdAt,
                 ...document,
             });
