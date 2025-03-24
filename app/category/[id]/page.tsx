@@ -36,9 +36,9 @@ export default function Page() {
     useEffect(() => {
         const timer = setTimeout(() => {
             if (!articles) {
-                window.location.href = `/testfetch/${categoryId}`;
+                window.location.href = `/category/${categoryId}`;
             }
-        }, 100); // 5-second delay before reload
+        }, 3000); // 5-second delay before reload
 
         return () => clearTimeout(timer); // Cleanup the timer
     }, [articles, categoryId]);

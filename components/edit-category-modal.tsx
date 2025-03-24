@@ -1,7 +1,5 @@
-"use client"
-
-import type React from 'react'
-import { useState } from 'react'
+'use client'
+import { useEffect, useState } from 'react'
 import { X, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -22,11 +20,12 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { AddFireStoreData } from '@/app/firebase/(hooks)/addFireStoreData'
 import { useAuth } from '@clerk/nextjs'
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid'
+import { getDoc, doc } from 'firebase/firestore'
+import { firestoreDb } from '@/app/firebase/firebase'
 
 
-
-interface CreateCategoryModalProps {
+interface EditCategoryModalProps {
     isOpen: boolean 
     onClose: () => void 
     onCreateCategory: (category: {
@@ -37,9 +36,9 @@ interface CreateCategoryModalProps {
         includeKeyword: string[]
         excludeKeyword: string[]
     }) => void
+    id: string
 }
 
-// Example news sources - replace with your actual sources
 const availableSources = [
     { value: "cnn", label: "CNN" },
     { value: "bbc-news", label: "BBC" },
@@ -50,7 +49,7 @@ const availableSources = [
     { value: "business-insider", label: "Business Insider" },
 ]
 
-export default function CreateCategoryModal({isOpen, onClose, onCreateCategory} : CreateCategoryModalProps)
+export default function EditCategoryModal({isOpen, onClose, onCreateCategory, id} : EditCategoryModalProps)
 {
     const { userId } = useAuth() || { userId: '' }
     const userIdString = userId || ''
@@ -62,7 +61,33 @@ export default function CreateCategoryModal({isOpen, onClose, onCreateCategory} 
     const [excludeKeyword, setExcludeKeyword] = useState<string>("")
     const [includeKeywords, setIncludeKeywords] = useState<string[]>([])
     const [excludeKeywords, setExcludeKeywords] = useState<string[]>([])
-    const {addData} = AddFireStoreData('categoryPreferences')
+    const [existingCategoryData, setExistingCategoryData] = useState<any>(null) // Store existing category data
+    const {updateData} = AddFireStoreData('categoryPreferences')
+
+    useEffect(() => {
+        if (isOpen && id) {
+            // Fetch the existing category data from Firestore when modal opens
+            const fetchCategoryData = async () => {
+                const categoryDoc = doc(firestoreDb, 'categoryPreferences', id)
+                const categorySnapshot = await getDoc(categoryDoc)
+
+                if (categorySnapshot.exists()) {
+                    const categoryData = categorySnapshot.data()
+                    setExistingCategoryData(categoryData)
+
+                    // Populate form with existing data
+                    setName(categoryData.name || "")
+                    setSelectedSources(categoryData.source || [])
+                    setIncludeKeywords(categoryData.includeKeyword || [])
+                    setExcludeKeywords(categoryData.excludeKeyword || [])
+                } else {
+                    console.log("No such category!")
+                }
+            }
+
+            fetchCategoryData()
+        }
+    }, [isOpen, id])
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -75,18 +100,25 @@ export default function CreateCategoryModal({isOpen, onClose, onCreateCategory} 
             excludeKeyword: excludeKeywords
         }
         onCreateCategory(category)
-        addData(category)
+        updateData(id, category)
         resetForm()
         onClose()
     }
 
     const resetForm = () => {
-        setName("")
-        setSelectedSources([])
-        setIncludeKeyword("")
-        setExcludeKeyword("")
-        setIncludeKeywords([])
-        setExcludeKeywords([])
+        if (existingCategoryData) {
+            setName(existingCategoryData.name || "")
+            setSelectedSources(existingCategoryData.source || [])
+            setIncludeKeywords(existingCategoryData.includeKeyword || [])
+            setExcludeKeywords(existingCategoryData.excludeKeyword || [])
+        } else {
+            setName("")
+            setSelectedSources([])
+            setIncludeKeyword("")
+            setExcludeKeyword("")
+            setIncludeKeywords([])
+            setExcludeKeywords([])
+        }
     }
 
     const toggleSource = (sourceValue: string) => {
@@ -184,15 +216,6 @@ export default function CreateCategoryModal({isOpen, onClose, onCreateCategory} 
                                                     {source.label}
                                                 </CommandItem>
                                             ))}
-                                            {/* <CommandItem >
-                                                <span>Hello</span>
-                                            </CommandItem>
-                                            <CommandItem >
-                                                <span>Hello</span>
-                                            </CommandItem>
-                                            <CommandItem >
-                                                <span>Hello</span>
-                                            </CommandItem>               */}
                                         </CommandGroup>
                                         </CommandList>
                                     </Command>
@@ -273,7 +296,7 @@ export default function CreateCategoryModal({isOpen, onClose, onCreateCategory} 
                         </div>
 
                         <div className="flex justify-end pt-4">
-                            <Button variant="outline" type="submit">Create</Button>
+                            <Button  className='bg-blue-950 border-2 ' type="submit">Change</Button>
                         </div>
                     </form>
                 </div>

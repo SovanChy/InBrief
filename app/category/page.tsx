@@ -24,15 +24,21 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import CreateCategoryModal from "@/components/create-category-modal";
+import EditCategoryModal from "@/components/edit-category-modal";
 import { DocumentData } from "firebase/firestore";
 import { getFirestoreSnapshot } from "../firebase/(hooks)/getFirestoreSnapshot";
+import { AddFireStoreData } from "../firebase/(hooks)/addFireStoreData";
 
 const Category = () => {
   const { data } = getFirestoreSnapshot("categoryPreferences");
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [isEditCategoryModalOpen, setIsEditCategoryModalOpen] = useState(false);
+  const [categoryId, setCategoryId] = useState<string | null>(null);
+
   const router = useRouter();
   const [categories, setCategories] = useState<any[]>([]);
   const [categoriesData, setCategoriesData] = useState<DocumentData[]>([]);
+  const {deleteDataWithCategoryNewsId} = AddFireStoreData("categoryPreferences");
 
   // const handleDeleteCategory = (index: number) => {
   //     const newCategories = [...categories]
@@ -46,10 +52,16 @@ const Category = () => {
     console.log("Created category:", category);
   };
 
-  const onDelete = (index: number) => {
-    console.log(`Delete item at index: ${index}`);
+  const handleEditCategory = (category: any) => {
+    setCategories([...categories, category]);
+    // Here you would typically save the category to your backend
+    console.log("Created category:", category);
   };
-  const onEdit = (index: number) => {
+
+  const onDelete = (index: string) => {
+    deleteDataWithCategoryNewsId(index)
+  };
+  const onEdit = (index: string) => {
     console.log(`Edit item at index: ${index}`);
   };
 
@@ -111,13 +123,16 @@ const Category = () => {
                 <div key={item.id}>
                   <Card
                     className="bg-blue-950 overflow-hidden transition-all hover:shadow-md mb-3"
-                    onClick={() =>
-                      router.push(`/testfetch/${item.categoryNewsId}`)
-                    }
+                   
                   >
                     <CardHeader className="dark:bg-gray-1000 ">
                       <div className="flex justify-between items-start">
-                        <CardTitle className="text-xl  mt-3 mb-3 font-bold">
+                        <CardTitle
+                          className="text-xl mt-3 mb-3 font-bold cursor-pointer"
+                          onClick={() =>
+                          router.push(`/newsfetchcategory/${item.categoryNewsId}`)
+                          }
+                        >
                         <div className="bg-white border border-gray-300 rounded-md px-4 py-2 w-full focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 shadow-sm hover:border-gray-400 transition-colors">
                           {item.name} 
                         </div>
@@ -136,7 +151,10 @@ const Category = () => {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
                               className="cursor-pointer"
-                              onClick={() => onEdit(item.id)}
+                              onClick={() => {
+                              setCategoryId(item.id);
+                              setIsEditCategoryModalOpen(true);
+                              }}
                             >
                               <Edit className="h-4 w-4 mr-2" />
                               Edit
@@ -144,7 +162,7 @@ const Category = () => {
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               className="cursor-pointer text-red-600 focus:text-red-600"
-                              onClick={() => onDelete(item.id)}
+                              onClick={() => onDelete(item.categoryNewsId)}
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
                               Delete
@@ -153,7 +171,7 @@ const Category = () => {
                         </DropdownMenu>
                       </div>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent >
                       <div className="space-y-3">
                         <div>
                           <h3 className="text-sm font-medium text-gray-200 dark:text-gray-400">
@@ -223,8 +241,15 @@ const Category = () => {
               onClose={() => setIsCategoryModalOpen(false)}
               onCreateCategory={handleCreateCategory}
             />{" "}
+
+        <EditCategoryModal
+              isOpen={isEditCategoryModalOpen}
+              onClose={() => setIsEditCategoryModalOpen(false)}
+              onCreateCategory={handleEditCategory}
+              id={categoryId || ""}
+            />{" "}
           </main>
-        </div>
+          </div>
       ) : (
         <div className="flex flex-col justify-center items-center h-screen">
           <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin mb-4"></div>
