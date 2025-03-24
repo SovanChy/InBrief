@@ -1,7 +1,7 @@
 "use client"
 
 import type React from 'react'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { X, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -22,13 +22,17 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { AddFireStoreData } from '@/app/firebase/(hooks)/addFireStoreData'
 import { useAuth } from '@clerk/nextjs'
+import { v4 as uuidv4 } from 'uuid';
+
 
 
 interface CreateCategoryModalProps {
     isOpen: boolean 
     onClose: () => void 
     onCreateCategory: (category: {
-        name: string 
+        name: string
+        uid: string
+        categoryNewsId: string
         source: string[]
         includeKeyword: string[]
         excludeKeyword: string[]
@@ -46,15 +50,13 @@ const availableSources = [
     { value: "abc-news", label: "ABC News" },
     { value: "business-insider", label: "Business Insider" },
     { value: "financial-times", label: "Financial Times" }
-
-
-
-
-
 ]
 
 export default function CreateCategoryModal({isOpen, onClose, onCreateCategory} : CreateCategoryModalProps)
 {
+    const { userId } = useAuth() || { userId: '' }
+    const userIdString = userId || ''
+    const categoryNewsId = uuidv4()
     const [name, setName] = useState("")
     const [sourcesOpen, setSourcesOpen] = useState(false)
     const [selectedSources, setSelectedSources] = useState<string[]>([])
@@ -68,6 +70,8 @@ export default function CreateCategoryModal({isOpen, onClose, onCreateCategory} 
         e.preventDefault()
         const category = {
             name: name,
+            uid: userIdString,
+            categoryNewsId: categoryNewsId,
             source: selectedSources,
             includeKeyword: includeKeywords,
             excludeKeyword: excludeKeywords
