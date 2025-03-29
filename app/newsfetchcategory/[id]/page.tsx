@@ -46,6 +46,7 @@ const storedNewsSnapshot = await db
 if (!storedNewsSnapshot.empty) {
   // If data already exists, use it
   data = storedNewsSnapshot.docs.map(doc => doc.data());
+  data = JSON.parse(JSON.stringify(data))
   loading = false;  // No need to fetch from API
 } else {
   // Fetch category preferences from Firestore
@@ -81,7 +82,7 @@ if (!storedNewsSnapshot.empty) {
       const sourcesParam = 
         pref.source.length > 0 ? `&sources=${pref.source.join(",")}` : "";
 
-      const URL = `https://newsapi.org/v2/everything?language=en${queryString}${sourcesParam}&apiKey=${API_KEY}`;
+      const URL = `https://newsapi.org/v2/everything?language=en${queryString}${sourcesParam}&pageSize=10&apiKey=${API_KEY}`;
 
       try {
         const response = await fetch(URL);

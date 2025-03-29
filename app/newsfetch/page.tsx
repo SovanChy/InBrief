@@ -1,7 +1,7 @@
 import { StoreNewsData } from "@/components/storenewsdata"
 export default async function Page() {
     const API_KEY = process.env.NEWS_API_KEY
-    const URL = `https://newsapi.org/v2/top-headlines?country=us&category=technology&apiKey=${API_KEY}`
+    const URL = `https://newsapi.org/v2/top-headlines?country=us&category=technology&pageSize=10&apiKey=${API_KEY}`
     const response = await fetch(URL)
     const data = await response.json()
     console.log(data)
