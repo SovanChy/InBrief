@@ -6,6 +6,8 @@ import { X, ThumbsUp, MessageSquare, Share2, MoreHorizontal, Clock } from "lucid
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tab"
+import { firestoreDb } from "@/app/firebase/firebase"
+import { doc, updateDoc, getDoc } from "firebase/firestore";
 
 interface Comment {
   id: string
@@ -24,6 +26,7 @@ interface ArticleModalProps {
     sourceUrl: string
     image: string
     content: string
+    summarization: string
     likes: string
     comments: string
     tags: { label: string; color: string }[]
@@ -32,8 +35,79 @@ interface ArticleModalProps {
   onClose: () => void
 }
 
-export default function ArticleModal({ article, isOpen, onClose }: ArticleModalProps) {
+export default function ArticleModal({ article, isOpen, onClose}: ArticleModalProps) {
   const [showComments, setShowComments] = useState(true)
+  const [response, setResponse] = useState("")
+  const [loading, setLoading] = useState(false)
+  // const [scrapedArticle, setScrapedArticle] = useState<{
+  //   title: string;
+  //   url: string;
+  //   textContent: string;
+  // } | null>(null);
+
+
+
+  //sending request to openai
+
+  // async function askOpenAI() {
+  //   const res = await fetch("/api/openai", {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({ prompt: scrapedArticle?.textContent || "" }),
+  //   });
+
+  //   const data = await res.json();
+  //   setResponse(data.message);
+  //   console.log(data)
+  // }
+
+  //Scraping content
+  async function sendScrapeRequest() {
+    if (!article?.source) {
+      console.error('No article URL available to scrape.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Initiate both fetch requests concurrently
+      const scrapeResponse = fetch(`/api/scrape-news?link=${encodeURIComponent(article.source)}`, {
+        method: "GET",
+      });
+
+      const [scrapeRes] = await Promise.all([scrapeResponse]);
+
+      if (!scrapeRes.ok) {
+        throw new Error(`Failed to fetch article: ${scrapeRes.statusText}`);
+      }
+
+      const scrapeData = await scrapeRes.json();
+      const scrapedArticle = scrapeData.textContent;
+
+      // Send the scraped content to OpenAI
+      const summarizedContent = await fetch("/api/openai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: scrapedArticle || "" }),
+      }).then((res) => res.json());
+
+      setResponse(summarizedContent.message);
+      console.log('Scraped article:', summarizedContent);
+
+      // const docRef = doc(firestoreDb, "news", id)
+      
+
+
+    } catch (error) {
+      setResponse("Summarization is not available for this article")
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
+
 
   // Sample comments data
   const comments: Comment[] = [
@@ -106,31 +180,53 @@ export default function ArticleModal({ article, isOpen, onClose }: ArticleModalP
           <div className="text-sm text-gray-500 mb-4">
             <span>
               Source:{" "}
-              <a href={article.sourceUrl} className="text-blue-500 hover:underline">
+              <a href={article.source} className="text-blue-500 hover:underline">
                 {article.source}
               </a>
             </span>
           </div>
 
           <Tabs defaultValue="summary" className="mb-6">
-            <TabsList className="bg-gray-100 dark:bg-gray-700">
-              <TabsTrigger value="bullet-points">Bullet points</TabsTrigger>
-              <TabsTrigger value="summary">Summary</TabsTrigger>
+            <TabsList className="bg-blue-900 dark:bg-gray-700">
+              <TabsTrigger onClick={() => sendScrapeRequest()} value="bullet-points" className="text-gray-500">Bullet points</TabsTrigger>
+              <TabsTrigger value="summary" className="text-gray-500">Summary</TabsTrigger>
             </TabsList>
-            <TabsContent value="bullet-points" className="mt-4">
-              <ul className="list-disc pl-5 space-y-2">
-                <li>AI technology is evolving at lightning speed</li>
-                <li>Reshaping how businesses operate across industries</li>
-                <li>Transforming healthcare, finance, and more</li>
-                <li>Not just a buzzword but the cornerstone of innovation</li>
-              </ul>
+            <TabsContent value="bullet-points" className="bg-gray-200 p-4 mt-4 " >
+                <p className="text-gray-800 dark:text-gray-300">
+                {loading ? (
+                  <div className="flex justify-center items-center">
+                  <svg
+                    className="animate-spin h-5 w-5 text-gray-700"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    ></circle>
+                    <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    ></path>
+                  </svg>
+                  </div>
+                ) : (
+                  response &&
+                  response.split('\n').map((point, index) => (
+                  <p key={index}>{point}</p>
+                  ))
+                )}
+                </p>
             </TabsContent>
-            <TabsContent value="summary" className="mt-4">
-              <p className="text-gray-700 dark:text-gray-300">
-                In an era where technology evolves at lightning speed, Artificial Intelligence (AI) continues to make
-                waves across industries, reshaping the way businesses operate and individuals interact with their world.
-                From healthcare to finance, AI is not just a buzzword—it's the cornerstone of the next generation of
-                innovation.
+            <TabsContent value="summary" className="bg-gray-200 p-4 mt-4">
+              <p className=" text-gray-700 dark:text-gray-300 ">
+               {response &&  <p>{response}</p>}
               </p>
             </TabsContent>
           </Tabs>
