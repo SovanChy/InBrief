@@ -6,30 +6,40 @@ import { collection, getDocs, query, orderBy, addDoc,  limit, where, DocumentDat
 
 
 export default function getFireStoreDataToday(collectionName: string) {
-  const [data, setData] = useState<DocumentData | null>(null);
+  const [data, setData] = useState<{  docData: DocumentData } | null>(null); // Define the state structure
+  const [id, setId] = useState('')
   useEffect(() => {
     const fetchData = async () => {
-    try{
-        const docRef = collection(firestoreDb, collectionName)
-        const q = query(docRef, orderBy('createdAt', 'desc'), limit(20));
+      try {
+        const docRef = collection(firestoreDb, collectionName);
+        const q = query(docRef, orderBy("createdAt", "desc"), limit(1)); // Get the latest document
         const docSnap = await getDocs(q);
-        const documentsData: DocumentData[] = [];
-        docSnap.forEach((doc) => {
-          documentsData.push({...doc.data(), id: doc.id});
-        });
-        console.log('Documents data:', documentsData);
-        setData(documentsData);
 
-    }catch(error){
-        console.error("Error fetching document:", error);
-    }
+        if (!docSnap.empty) {
+          const doc = docSnap.docs[0]; // Get the first document from the query result
+          const docId = doc.id; // 🔥 Get the document ID
+          const docData = doc.data(); // 🔥 Get the document data
 
-    }
+          console.log("Document ID:", docId);
+          console.log("Document Data:", docData);
+
+          // Set the state with the document ID and data
+          setData({docData });
+          setId(docId)
+        } else {
+          console.log("No document found.");
+          setData(null); // If no document matches the query, set state to null
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setData(null); // Set state to null on error
+      }
+    };
+
     fetchData();
-  }, [collectionName]);
+  }, [collectionName]); // Re-run when collectionName changes
 
-  return { data };
-
+  return { data, id }; // Return the data state
 }
   
 

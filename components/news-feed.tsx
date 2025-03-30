@@ -31,6 +31,7 @@ interface Article {
   urlToImage: string;
   description?: string;
   publishedAt: string;
+  summary: string;
 }
 
 interface NewsFeedProps {
@@ -38,7 +39,11 @@ interface NewsFeedProps {
   description?: string;
 }
 
-export default function NewsFeed({ articles }: NewsFeedProps) {
+interface idProps{
+  id: string; 
+}
+
+export default function NewsFeed({ articles, id }: NewsFeedProps & idProps) {
   const [like, setLike] = useState(0);
   const [comment, setComment] = useState(0);
   const [view, setView] = useState(0);
@@ -147,6 +152,9 @@ export default function NewsFeed({ articles }: NewsFeedProps) {
               {articles.map((article, index) => (
                 <ArticleCard
                   key={index}
+                  id={id}
+                  arrayIndex={index}
+                  summary={article.summary}
                   image={article.urlToImage || "/placeholder.svg"}
                   title={article.title}
                   timePosted={new Date(article.publishedAt).toLocaleString()}
@@ -177,6 +185,9 @@ export default function NewsFeed({ articles }: NewsFeedProps) {
 }
 
 interface ArticleCardProps {
+  id: string;
+  summary: string;
+  arrayIndex: number;
   image: string;
   title: string;
   timePosted: string;
@@ -188,32 +199,25 @@ interface ArticleCardProps {
   tags: { label: string; color: string }[];
 }
 
-function ArticleCard({
-  image,
-  title,
-  timePosted,
-  readTime,
-  source,
-  preview,
-  likes,
-  comments,
-  tags,
-}: ArticleCardProps) {
+function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, source, preview, likes, comments, tags, id}: ArticleCardProps & idProps) {
   const handleClick = () => {
     // Get the parent component's handleArticleClick function
     const article = {
+      id,
+      arrayIndex,
+      summary,
       title,
       timePosted,
       readTime,
       source,
       sourceUrl: `https://${source}`,
       image,
+      preview,
       content: preview,
       likes,
       comments,
       tags,
     };
-
     // Find the NewsFeed component and call its handleArticleClick function
     const event = new CustomEvent("articleClick", { detail: article });
     document.dispatchEvent(event);
@@ -301,12 +305,7 @@ function ArticleCard({
             </Button>
           </div>
 
-          <div className="flex items-center gap-1">
-            <Button variant="ghost" size="sm" className="h-8 px-2">
-              <MessageSquare className="h-4 w-4 mr-1" />
-              {comments}
-            </Button>
-          </div>
+      
 
           <Button variant="ghost" size="sm" className="h-8 px-2">
             <Share2 className="h-4 w-4 mr-1" />
