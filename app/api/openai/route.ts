@@ -14,7 +14,7 @@ export async function POST(req: Request) {
       messages: [
         {
           role: "user",
-          content: `Summarize this article in exactly 5 concise bullet points, focusing on key facts and main ideas. Keep each point brief and to the point: ${prompt}`,
+          content: `Summarize this article in exactly 5 concise bullet points, focusing on key facts and main ideas. Keep each point brief and to the point. No markdown format: ${prompt}`,
         },
       ],
     });
@@ -29,3 +29,6 @@ export async function POST(req: Request) {
     );
   }
 }
+
+
+

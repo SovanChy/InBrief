@@ -31,6 +31,7 @@ interface Article {
   urlToImage: string;
   description?: string;
   publishedAt: string;
+  summary: string;
 }
 
 interface NewsFeedProps {
@@ -38,7 +39,10 @@ interface NewsFeedProps {
   description?: string;
 }
 
-export default function CategoryFeed({ articles }: NewsFeedProps) {
+interface idProps{
+  id: string; 
+}
+export default function CategoryFeed({ articles, id }: NewsFeedProps & idProps) {
   const [like, setLike] = useState(0);
   const [comment, setComment] = useState(0);
   const [view, setView] = useState(0);
@@ -142,17 +146,21 @@ export default function CategoryFeed({ articles }: NewsFeedProps) {
                 <div className="space-y-6">
                     {articles.map((article, index) => (
                         <ArticleCard
-                            key={index}
-                            image={article.urlToImage || "/placeholder.svg"}
-                            title={article.title}
-                            timePosted={new Date(article.publishedAt).toLocaleString()}
-                            readTime="5 min"
-                            source={article.url}
-                            preview={article.description || "Click to read more..."}
-                            likes="0"
-                            comments="0"
-                            tags={[{ label: "unread", color: "blue" }]}
-                        />
+                        key={index}
+                        id={id}
+                        arrayIndex={index}
+                        summary={article.summary}
+                        image={article.urlToImage || "/placeholder.svg"}
+                        title={article.title}
+                        timePosted={new Date(article.publishedAt).toLocaleString()}
+                        readTime="5 min"
+                        source={article.url}
+                        preview={article.description || "Click to read more..."}
+                        likes="0"
+                        comments="0"
+                        tags={[{ label: "unread", color: "blue" }]}
+                        openAiCollectionName="categoryNews"
+                      />
                     ))}
                 </div>
             </section>
@@ -173,6 +181,9 @@ export default function CategoryFeed({ articles }: NewsFeedProps) {
 }
 
 interface ArticleCardProps {
+  id: string;
+  summary: string;
+  arrayIndex: number;
   image: string;
   title: string;
   timePosted: string;
@@ -182,32 +193,28 @@ interface ArticleCardProps {
   likes: string;
   comments: string;
   tags: { label: string; color: string }[];
+  openAiCollectionName: string
 }
 
-function ArticleCard({
-  image,
-  title,
-  timePosted,
-  readTime,
-  source,
-  preview,
-  likes,
-  comments,
-  tags,
-}: ArticleCardProps) {
+function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, source, preview, likes, comments, tags, id, openAiCollectionName}: ArticleCardProps & idProps) {
   const handleClick = () => {
     // Get the parent component's handleArticleClick function
     const article = {
+      id,
+      arrayIndex,
+      summary,
       title,
       timePosted,
       readTime,
       source,
       sourceUrl: `https://${source}`,
       image,
+      preview,
       content: preview,
       likes,
       comments,
       tags,
+      openAiCollectionName,
     };
 
     // Find the NewsFeed component and call its handleArticleClick function

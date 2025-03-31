@@ -31,7 +31,6 @@ interface EditCategoryModalProps {
     onCreateCategory: (category: {
         name: string
         uid: string
-        categoryNewsId: string
         source: string[]
         includeKeyword: string[]
         excludeKeyword: string[]
@@ -53,7 +52,7 @@ export default function EditCategoryModal({isOpen, onClose, onCreateCategory, id
 {
     const { userId } = useAuth() || { userId: '' }
     const userIdString = userId || ''
-    const categoryNewsId = uuidv4()
+    // const categoryNewsId = uuidv4()
     const [name, setName] = useState("")
     const [sourcesOpen, setSourcesOpen] = useState(false)
     const [selectedSources, setSelectedSources] = useState<string[]>([])
@@ -94,7 +93,6 @@ export default function EditCategoryModal({isOpen, onClose, onCreateCategory, id
         const category = {
             name: name,
             uid: userIdString,
-            categoryNewsId: categoryNewsId,
             source: selectedSources,
             includeKeyword: includeKeywords,
             excludeKeyword: excludeKeywords

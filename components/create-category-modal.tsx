@@ -273,7 +273,7 @@ export default function CreateCategoryModal({isOpen, onClose, onCreateCategory} 
                         </div>
 
                         <div className="flex justify-end pt-4">
-                            <Button variant="outline" type="submit">Create</Button>
+                        <Button  className='bg-blue-950 border-2 ' type="submit">Create</Button>
                         </div>
                     </form>
                 </div>

@@ -164,6 +164,8 @@ export default function NewsFeed({ articles, id }: NewsFeedProps & idProps) {
                   likes="0"
                   comments="0"
                   tags={[{ label: "unread", color: "blue" }]}
+                  openAiCollectionName="news"
+
                 />
               ))}
             </div>
@@ -197,9 +199,10 @@ interface ArticleCardProps {
   likes: string;
   comments: string;
   tags: { label: string; color: string }[];
+  openAiCollectionName: string
 }
 
-function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, source, preview, likes, comments, tags, id}: ArticleCardProps & idProps) {
+function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, source, preview, likes, comments, tags, id, openAiCollectionName}: ArticleCardProps & idProps) {
   const handleClick = () => {
     // Get the parent component's handleArticleClick function
     const article = {
@@ -217,6 +220,7 @@ function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, s
       likes,
       comments,
       tags,
+      openAiCollectionName,
     };
     // Find the NewsFeed component and call its handleArticleClick function
     const event = new CustomEvent("articleClick", { detail: article });

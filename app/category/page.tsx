@@ -40,11 +40,7 @@ const Category = () => {
   const [categoriesData, setCategoriesData] = useState<DocumentData[]>([]);
   const {deleteDataWithCategoryNewsId} = AddFireStoreData("categoryPreferences");
 
-  // const handleDeleteCategory = (index: number) => {
-  //     const newCategories = [...categories]
-  //     newCategories.splice(index, 1)
-  //     setCategories(newCategories)
-  //   }
+
 
   const handleCreateCategory = (category: any) => {
     setCategories([...categories, category]);

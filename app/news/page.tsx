@@ -3,10 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import NewsFeed from '@/components/news-feed';
 import { DocumentData } from "firebase/firestore";
-import getFireStoreDataToday from '../firebase/(hooks)/getFireStoreDataToday';
 import { useNewsData } from '../firebase/useNewsData';
 import { AddFireStoreData } from '../firebase/(hooks)/addFireStoreData';
 import { Button } from '@/components/ui/button';
+import { getFireStoreDataToday } from '../firebase/(hooks)/getFireStoreDataToday';
 
 export default function Page() {
   const [articles, setArticles] = useState<any>(null);

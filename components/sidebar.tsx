@@ -53,15 +53,7 @@ export default function SidebarComponent({ activeTab, setActiveTab }: SidebarCom
             </button>
           </Link>
 
-          <Link href="/history">
-            <button
-              className={`p-2 rounded-md ${activeTab === "history" ? "bg-blue-800" : ""}`}
-              onClick={() => setActiveTab("history")}
-            >
-              <Clock className="h-6 w-6" />
-            </button>
-          </Link>
-
+         
           <Link href="/category">
             <button
               className={`p-2 rounded-md ${activeTab === "categories" ? "bg-blue-800" : ""}`}

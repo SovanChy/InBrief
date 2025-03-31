@@ -27,6 +27,7 @@ interface ArticleModalProps {
     likes: string
     comments: string
     tags: { label: string; color: string }[]
+    openAiCollectionName: string
   } | null
   isOpen: boolean
   onClose: () => void
@@ -36,20 +37,19 @@ export default function ArticleModal({ article, isOpen, onClose}: ArticleModalPr
   const [response, setResponse] = useState("")
   const [responseFromDatabase, setResponseFromDatabase] = useState("")
   const [loading, setLoading] = useState(false)
-  // const { data } = getFireStoreDataToday('news');
   
  
 
 
   //Scraping content
-  async function sendScrapeRequest(index: number) {
+  async function sendScrapeRequest(index: number, collectionName: string) {
     if (!article?.source) {
       console.error('No article URL available to scrape.');
       return;
     }
 
      //Referencing the database
-     const docRef = doc(firestoreDb, "news", article.id);
+     const docRef = doc(firestoreDb, collectionName, article.id);
      const docSnap = await getDoc(docRef);
      if (!docSnap.exists()) {
        console.error("Document not found!");
@@ -103,12 +103,6 @@ export default function ArticleModal({ article, isOpen, onClose}: ArticleModalPr
       }).then((res) => res.json());
 
 
-    // Check if the article already has a summary or if the title/content is similar
-    // if (articles[article.arrayIndex].summary === summarizedContent.message) {
-    //   console.log("No changes detected. Article will not be updated.");
-    //   return; // Don't update if the summary is the same
-    // }
-
     articles[article.arrayIndex] = {
       ...articles[article.arrayIndex],
       summary: summarizedContent.message
@@ -129,6 +123,8 @@ export default function ArticleModal({ article, isOpen, onClose}: ArticleModalPr
     }
   }
   }
+
+  
 
 
 
@@ -166,8 +162,8 @@ export default function ArticleModal({ article, isOpen, onClose}: ArticleModalPr
                 </div>
               ))}
 
-              <Button variant="ghost" size="icon" onClick={() => {console.log(article.arrayIndex)}}>test index</Button>
-              <Button variant="ghost" size="icon" onClick={() => {console.log(article.id)}}>test article id</Button>
+              {/* <Button variant="ghost" size="icon" onClick={() => {console.log(article.arrayIndex)}}>test index</Button>
+              <Button variant="ghost" size="icon" onClick={() => {console.log(article.id)}}>test article id</Button> */}
 
 
               <Button variant="ghost" size="icon" className="h-6 w-6">
@@ -208,7 +204,7 @@ export default function ArticleModal({ article, isOpen, onClose}: ArticleModalPr
 
           <Tabs defaultValue="preview" className="mb-6">
             <TabsList className="bg-blue-900 dark:bg-gray-700">
-              <TabsTrigger onClick={() => sendScrapeRequest(article.arrayIndex)} value="summarization" className="text-gray-500">Summarization</TabsTrigger>
+              <TabsTrigger onClick={() => sendScrapeRequest(article.arrayIndex, article.openAiCollectionName)} value="summarization" className="text-gray-500">Summarization</TabsTrigger>
               <TabsTrigger value="preview" className="text-gray-500">Preview</TabsTrigger>
             </TabsList>
             <TabsContent value="summarization" className="bg-gray-200 p-4 mt-4 " >
@@ -248,6 +244,7 @@ export default function ArticleModal({ article, isOpen, onClose}: ArticleModalPr
               }
                 </p>
             </TabsContent>
+            
             <TabsContent value="preview" className="bg-gray-200 p-4 mt-4">
               <p className=" text-gray-700 dark:text-gray-300 ">
                 {article.preview}
