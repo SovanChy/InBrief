@@ -3,8 +3,12 @@ import React, { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import SidebarComponent from "@/components/sidebar";
 import { useState } from "react";
-import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
+import { Edit, MoreHorizontal, Trash2, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { 
+  Alert,
+  AlertDescription
+ } from "@/components/ui/alert";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,11 +38,14 @@ const Category = () => {
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isEditCategoryModalOpen, setIsEditCategoryModalOpen] = useState(false);
   const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false)
 
   const router = useRouter();
   const [categories, setCategories] = useState<any[]>([]);
   const [categoriesData, setCategoriesData] = useState<DocumentData[]>([]);
+  const [alert, setAlert] = useState(false);
   const {deleteDataWithCategoryNewsId} = AddFireStoreData("categoryPreferences");
+  
 
 
 
@@ -54,13 +61,22 @@ const Category = () => {
     console.log("Created category:", category);
   };
 
+  const handleShareCategory = (categoryNewsId: string) => {
+    const website = window.location.origin; // Gets the base URL dynamically
+    const link = `${website}/category/${categoryNewsId}`;    
+    navigator.clipboard.writeText(link).then(() => {
+    console.log("Link copied to clipboard:", link);
+    setAlert(true)
+    setTimeout(() => setAlert(false), 1500)
+    }).catch((err) => {
+      console.error("Failed to copy link to clipboard:", err);
+    });
+  };
+
   const onDelete = (index: string) => {
     deleteDataWithCategoryNewsId(index)
   };
-  const onEdit = (index: string) => {
-    console.log(`Edit item at index: ${index}`);
-  };
-
+ 
 
   useEffect(() => {
     if (data && Array.isArray(data)) {
@@ -70,7 +86,12 @@ const Category = () => {
 
   return (
     <div>
-      {categoriesData ? (
+      { loading ? (
+        <div className="flex flex-col justify-center items-center h-screen">
+          <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin mb-4"></div>
+          <div className="text-gray-700 mb-4">Loading</div>
+        </div>
+      ) : categoriesData && categoriesData.length > 0 ? (
         <div className="flex w-full h-screen">
           <SidebarComponent activeTab="categories" setActiveTab={() => {}} />
           <main className="flex-1 overflow-y-auto bg-white dark:bg-gray-800 ml-24 p-4">
@@ -155,6 +176,18 @@ const Category = () => {
                               <Edit className="h-4 w-4 mr-2" />
                               Edit
                             </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="cursor-pointer"
+                              onClick={() => {
+                                handleShareCategory(item.categoryNewsId)
+                              }}
+                            >
+                            
+                              <Edit className="h-4 w-4 mr-2" />
+                              Share
+                            </DropdownMenuItem>
+                            
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               className="cursor-pointer text-red-600 focus:text-red-600"
@@ -244,16 +277,29 @@ const Category = () => {
               onCreateCategory={handleEditCategory}
               id={categoryId || ""}
             />{" "}
-          </main>
-          </div>
-      ) : (
-        <div className="flex flex-col justify-center items-center h-screen">
-          <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin mb-4"></div>
-          <div className="text-gray-700 mb-4">Loading</div>
+
+            {/* Centered Alert */}
+      {alert && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+          <Alert className="relative w-full max-w-xl bg-white text-white rounded-lg overflow-hidden">
+            <CheckCircle color="green" size={24} />
+            <AlertDescription>Link is copied</AlertDescription>
+          </Alert>
         </div>
       )}
+
+          </main>
+          </div>
+
+) : (
+  <div className="text-center">No categories found</div>
+    
+)}
+  
     </div>
-  );
+
+    
+);
 };
 
 export default Category;

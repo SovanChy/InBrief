@@ -65,18 +65,13 @@ export default function ArticleModal({ article, isOpen, onClose}: ArticleModalPr
     }
 
     // Check if the value exists at that index
-    if (!articles[article.arrayIndex]) {
+    if (articles[article.arrayIndex] === undefined) {
       console.log(`No article found at index ${article.arrayIndex}.`);
       return;
     }
 
-       // Check if the value exists at that index
-       if (articles[article.arrayIndex].summary) {
-        console.error(`summary already exist ${article.arrayIndex}.`);
-        return;
-      }
 
-  if(!articles[article.arrayIndex].summary) {
+  if (!articles[article.arrayIndex].summary){
 
     setLoading(true);
 
@@ -239,7 +234,7 @@ export default function ArticleModal({ article, isOpen, onClose}: ArticleModalPr
                   <p key={index}>{point}</p>
                   ))
                 ) : (
-                  <p> no summary found </p>
+                  <p> No summary found </p>
                 )
               }
                 </p>

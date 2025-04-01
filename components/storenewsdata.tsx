@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation'; // Import Next.js router
 import { AddFireStoreData } from '../app/firebase/(hooks)/addFireStoreData';
 import { firestoreDb } from '@/app/firebase/firebase';
-import { getDocs, doc, updateDoc, setDoc, query, where, limit, collection } from 'firebase/firestore';
+import { getDocs, getDoc, doc, updateDoc, setDoc, serverTimestamp, query, where, limit, collection } from 'firebase/firestore';
 interface StoreNewsDataProps {
   newsData: {
     articles: Array<any>;
@@ -34,9 +34,37 @@ export const StoreNewsData: React.FC<StoreNewsDataProps> = ({ newsData, redirect
       if (newsData && !hasStored.current) {
         try {
           // Store the news data
-          await addData({ articles: newsData.articles});
-          console.log("News data stored successfully");
-          hasStored.current = true;
+          const docRef = doc(firestoreDb, collectionName, "qxWoi5EEWe9y38CtA8gF")
+          const docSnap = await getDoc(docRef)
+
+          let existingArticles: any[] = [];
+
+          if (docSnap.exists()){
+            existingArticles = docSnap.data().articles || [];
+          }
+
+               //  Merge new articles at index 0, pushing older ones back
+        const mergedArticles = [...newsData.articles, ...existingArticles];
+
+        const  createdAt = serverTimestamp()
+
+        if (docSnap.exists()) {
+          // Update the existing document
+          await updateDoc(docSnap.ref, { articles: mergedArticles, createdAt });
+        } else {
+          // Create a new document
+          await setDoc(docSnap.ref, { articles: mergedArticles, createdAt});
+        }
+
+        console.log("News data stored successfully");
+        hasStored.current = true;
+
+
+
+         
+
+          // await addData({ articles: newsData.articles});
+          // console.log("News data stored successfully");
           
           // Redirect to the news page
           if (redirectTo) {
@@ -110,14 +138,14 @@ export const UpdateNewsDataCategory: React.FC<StoreNewsDataCategoryProps & { cat
           existingArticles = docSnap.data().articles || [];
         }
 
-        // 🔹 Merge new articles at index 0, pushing older ones back
+        //  Merge new articles at index 0, pushing older ones back
         const mergedArticles = [...newsData.articles, ...existingArticles];
 
         if (docSnap.exists()) {
-          // 🔹 Update the existing document
+          // Update the existing document
           await updateDoc(docSnap.ref, { articles: mergedArticles });
         } else {
-          // 🔹 Create a new document
+          // Create a new document
           await setDoc(docSnap, { articles: mergedArticles, categoryNewsId });
         }
 

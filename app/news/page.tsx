@@ -41,9 +41,9 @@ export default function Page() {
         <NewsFeed articles={articles} id={id} />
       ) : (
         <div className="flex flex-col justify-center items-center h-screen">
-        <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin mb-4"></div>
-        <div className="text-gray-700 mb-4">Loading</div>
-        <Button  className="mt-4 border border-blue-500 bg-white text-blue-600 hover:bg-blue-50 relative z-10" onClick={() => window.location.href = '/newsfetch'} style={{ marginTop: '20px' }}>Reload News</Button>
+          <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin mb-4"></div>
+          <div className="text-gray-700 mb-4">Loading</div>
+          <Button  className="mt-4 border border-blue-500 bg-white text-blue-600 hover:bg-blue-50 relative z-10" onClick={() => window.location.href = '/newsfetch'} style={{ marginTop: '20px' }}>Reload News</Button>
         </div>
       )}
     </div>

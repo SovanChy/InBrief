@@ -1,8 +1,10 @@
 'use client'
 import React from 'react'
 import SidebarComponent from '@/components/sidebar'
+import { useState } from 'react'
 
 export default function page() {
+  const [loading, setLoading] = useState(false)
   return (
 
     <div className="flex w-full h-screen">
