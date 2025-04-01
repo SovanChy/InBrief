@@ -1,7 +1,7 @@
 import { initializeApp, getApps, cert } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
-import { StoreNewsDataCategory } from "@/components/storenewsdata";
+import { UpdateNewsDataCategory } from "@/components/storenewsdata";
 
 function initFirebase() {
   if (getApps().length === 0) {
@@ -37,16 +37,16 @@ export default async function Page({ params }: { params: { id: string } }) {
   let loading = true;
   let error = null;
 
-  const storedNewsSnapshot = await db
-    .collection("categoryNews")
-    .where("categoryNewsId", "==", categoryNewsId)
-    .get();
+//   const storedNewsSnapshot = await db
+//     .collection("categoryNews")
+//     .where("categoryNewsId", "==", categoryNewsId)
+//     .get();
 
-  if (!storedNewsSnapshot.empty) {
-    data = storedNewsSnapshot.docs.map((doc) => doc.data());
-    data = JSON.parse(JSON.stringify(data));
-    loading = false;
-  } else {
+//   if (!storedNewsSnapshot.empty) {
+//     data = storedNewsSnapshot.docs.map((doc) => doc.data());
+//     data = JSON.parse(JSON.stringify(data));
+//     loading = false;
+//   } else {
     const newsSnapshot = await db
       .collection("categoryPreferences")
       .where("categoryNewsId", "==", categoryNewsId)
@@ -95,7 +95,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           loading = false;
         }
       }
-    }
+    // }
   }
 
   return (
@@ -105,7 +105,7 @@ export default async function Page({ params }: { params: { id: string } }) {
       ) : error ? (
         <div className="text-red-500 mb-4">{error}</div>
       ) : (
-        <StoreNewsDataCategory
+        <UpdateNewsDataCategory
           newsData={data}
           collectionName="categoryNews"
           categoryNewsId={categoryNewsId}

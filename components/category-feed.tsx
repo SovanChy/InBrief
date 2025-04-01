@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import {
-  Bell,
   Clock,
   Filter,
   MessageSquare,
@@ -25,6 +24,11 @@ import ArticleModal from "./article-modal";
 import CreateCategoryModal from "./create-category-modal";
 import SidebarComponent from "./sidebar";
 import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import Category from "@/app/category/page";
+
+
+
 interface Article {
   title: string;
   url: string;
@@ -47,6 +51,8 @@ export default function CategoryFeed({ articles, id }: NewsFeedProps & idProps) 
   const [comment, setComment] = useState(0);
   const [view, setView] = useState(0);
   const router = useRouter();
+  const params = useParams(); 
+  const categoryId = params.id;
 
   // Article Modal
   const [selectedArticle, setSelectedArticle] = useState<any>(null);
@@ -66,7 +72,7 @@ export default function CategoryFeed({ articles, id }: NewsFeedProps & idProps) 
   };
 
   const handleRefreshClick = () => {
-    router.push('/newsfetch')
+    router.push(`/newsupdatecategory/${categoryId}`)
 
   }
 
