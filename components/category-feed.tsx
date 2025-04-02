@@ -20,12 +20,13 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Badge } from "./ui/badge";
 import Image from "next/image";
-import ArticleModal from "./article-modal";
+import ArticleCategoryModal from "./article-category-modal";
 import CreateCategoryModal from "./create-category-modal";
 import SidebarComponent from "./sidebar";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import Category from "@/app/category/page";
+import { useAuth } from "@clerk/nextjs";
 
 
 
@@ -38,6 +39,8 @@ interface Article {
   summary: string;
   like: number;
   readStatus: boolean;
+  likesBy: string[] | null;
+
 }
 
 interface NewsFeedProps {
@@ -49,9 +52,7 @@ interface idProps{
   id: string; 
 }
 export default function CategoryFeed({ articles, id }: NewsFeedProps & idProps) {
-  const [like, setLike] = useState(0);
-  const [comment, setComment] = useState(0);
-  const [view, setView] = useState(0);
+ 
   const router = useRouter();
   const params = useParams(); 
   const categoryId = params.id;
@@ -168,16 +169,20 @@ export default function CategoryFeed({ articles, id }: NewsFeedProps & idProps) 
                         readStatus={article.readStatus}
                         tags={[{ label: "unread", color: "blue" }]}
                         openAiCollectionName="categoryNews"
+                        likesBy = {Array.isArray(article.likesBy) ? article.likesBy : null}
+
                       />
                     ))}
                 </div>
             </section>
         </main>
     </div>
-    <ArticleModal
+    <ArticleCategoryModal
         article={selectedArticle}
         isOpen={isArticleModalOpen}
         onClose={() => setIsArticleModalOpen(false)}
+        collectionName="categoryNews"
+        categoryNewsId={String(categoryId)}
     />
     <CreateCategoryModal
         isOpen={isCategoryModalOpen}
@@ -201,10 +206,13 @@ interface ArticleCardProps {
   like: number;
   readStatus: boolean;
   tags: { label: string; color: string }[];
-  openAiCollectionName: string
+  openAiCollectionName: string;
+  likesBy: string[] | null;
+
 }
 
-function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, source, preview, like, readStatus, tags, id, openAiCollectionName}: ArticleCardProps & idProps) {
+function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, source, preview, like, readStatus, tags, id, openAiCollectionName, likesBy}: ArticleCardProps & idProps) {
+  const {userId} = useAuth()
   const handleClick = () => {
     // Get the parent component's handleArticleClick function
     const article = {
@@ -223,6 +231,7 @@ function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, s
       readStatus,
       tags,
       openAiCollectionName,
+      likesBy
     };
 
     // Find the NewsFeed component and call its handleArticleClick function
@@ -306,10 +315,17 @@ function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, s
 
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="sm" className="h-8 px-2">
-              <ThumbsUp className="h-4 w-4 mr-1" />
-              {like}
+          {userId && likesBy?.includes(userId) ? (
+            <Button variant="ghost" size="sm" className="gap-2">
+            <ThumbsUp className="h-4 w-4 fill-blue-500 stroke-blue-500" />             
+             {like}
             </Button>
+            ) : (
+              <Button variant="ghost" size="sm" className="gap-2">
+              <ThumbsUp className="h-4 w-4" />
+              {like}
+              </Button>
+            )}
           </div>
 
       

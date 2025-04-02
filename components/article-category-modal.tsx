@@ -13,7 +13,7 @@ import { getFireStoreDataToday } from "@/app/firebase/(hooks)/getFireStoreDataTo
 import { getFireStoreDataCategory } from "@/app/firebase/(hooks)/getFireStoreDataToday"
 
 
-interface ArticleModalProps {
+interface ArticleCategoryModalProps {
   article: {
     id: string
     arrayIndex:number
@@ -34,15 +34,15 @@ interface ArticleModalProps {
   } | null
   isOpen: boolean
   collectionName: string
-  categoryNewsId: string | null
+  categoryNewsId: string 
   onClose: () => void
 }
 
-export default function ArticleModal({ article, isOpen, onClose, collectionName, categoryNewsId}: ArticleModalProps) {
+export default function ArticleCategoryModal({ article, isOpen, onClose, collectionName, categoryNewsId}: ArticleCategoryModalProps) {
   const [response, setResponse] = useState("")
   const [loading, setLoading] = useState(false)
   const {userId} = useAuth()
-  const { data, id } = getFireStoreDataToday('news');
+  const { data, id } = getFireStoreDataCategory("categoryNews", categoryNewsId);
 
   //get current like 
   const [liveArticles, setLiveArticles] = useState<any>(null);

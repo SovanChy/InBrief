@@ -1,10 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import {
-  Bell,
   Clock,
-  Filter,
-  MessageSquare,
   RefreshCw,
   Search,
   Share2,
@@ -25,6 +22,8 @@ import ArticleModal from "./article-modal";
 import CreateCategoryModal from "./create-category-modal";
 import SidebarComponent from "./sidebar";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
+
 interface Article {
   title: string;
   url: string;
@@ -34,6 +33,8 @@ interface Article {
   summary: string;
   like: number;
   readStatus: boolean; 
+  likesBy: string[] | null;
+
 }
 
 interface NewsFeedProps {
@@ -45,10 +46,9 @@ interface idProps{
   id: string; 
 }
 
+
+
 export default function NewsFeed({ articles, id }: NewsFeedProps & idProps) {
-  const [like, setLike] = useState(0);
-  const [comment, setComment] = useState(0);
-  const [view, setView] = useState(0);
   const router = useRouter();
 
   // Article Modal
@@ -56,6 +56,7 @@ export default function NewsFeed({ articles, id }: NewsFeedProps & idProps) {
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
+
   //handle article click
   const handleArticleClick = (article: any) => {
     setSelectedArticle(article);
@@ -163,6 +164,7 @@ export default function NewsFeed({ articles, id }: NewsFeedProps & idProps) {
                   readStatus={article.readStatus}
                   tags={[{ label: "unread", color: "blue" }]}
                   openAiCollectionName="news"
+                  likesBy = {Array.isArray(article.likesBy) ? article.likesBy : null}
 
                 />
               ))}
@@ -174,6 +176,9 @@ export default function NewsFeed({ articles, id }: NewsFeedProps & idProps) {
         article={selectedArticle}
         isOpen={isArticleModalOpen}
         onClose={() => setIsArticleModalOpen(false)}
+        collectionName="news"
+        categoryNewsId={null}
+
       />
       <CreateCategoryModal
         isOpen={isCategoryModalOpen}
@@ -197,11 +202,13 @@ interface ArticleCardProps {
   like: number;
   readStatus: boolean;
   tags: { label: string; color: string }[];
-  openAiCollectionName: string
+  openAiCollectionName: string;
+  likesBy: string[] | null;
   
 }
 
-function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, source, preview, like, tags, id, openAiCollectionName, readStatus}: ArticleCardProps & idProps) {
+function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, source, preview, like, tags, id, openAiCollectionName, readStatus,likesBy}: ArticleCardProps & idProps) {
+  const {userId} = useAuth()
   const handleClick = () => {
     // Get the parent component's handleArticleClick function
     const article = {
@@ -220,6 +227,7 @@ function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, s
       tags,
       readStatus, 
       openAiCollectionName,
+      likesBy,
     };
     // Find the NewsFeed component and call its handleArticleClick function
     const event = new CustomEvent("articleClick", { detail: article });
@@ -302,10 +310,21 @@ function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, s
 
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="sm" className="h-8 px-2">
+            {/* <Button variant="ghost" size="sm" className="h-8 px-2">
               <ThumbsUp className="h-4 w-4 mr-1" />
               {like}
+            </Button> */}
+            {userId && likesBy?.includes(userId) ? (
+            <Button variant="ghost" size="sm" className="gap-2">
+            <ThumbsUp className="h-4 w-4 fill-blue-500 stroke-blue-500" />             
+             {like}
             </Button>
+            ) : (
+              <Button variant="ghost" size="sm" className="gap-2">
+              <ThumbsUp className="h-4 w-4" />
+              {like}
+              </Button>
+            )}
           </div>
 
       
