@@ -1,9 +1,9 @@
 'use client'
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation'; // Import Next.js router
 import { AddFireStoreData } from '../app/firebase/(hooks)/addFireStoreData';
 import { firestoreDb } from '@/app/firebase/firebase';
-import { getDocs, getDoc, doc, updateDoc, setDoc, serverTimestamp, query, where, limit, collection } from 'firebase/firestore';
+import { getDocs,addDoc, getDoc, doc, updateDoc, setDoc, serverTimestamp, query, where, limit, collection } from 'firebase/firestore';
 interface StoreNewsDataProps {
   newsData: {
     articles: Array<any>;
@@ -46,14 +46,26 @@ export const StoreNewsData: React.FC<StoreNewsDataProps> = ({ newsData, redirect
                //  Merge new articles at index 0, pushing older ones back
         const mergedArticles = [...newsData.articles, ...existingArticles];
 
-        const  createdAt = serverTimestamp()
+        const  createdAt = serverTimestamp(); 
+        const like = 0; 
+        const readStatus = false; 
 
         if (docSnap.exists()) {
           // Update the existing document
-          await updateDoc(docSnap.ref, { articles: mergedArticles, createdAt });
+          const updatedArticles = mergedArticles.map(article => ({
+            ...article,
+            like,
+            readStatus,
+            }));
+          await updateDoc(docSnap.ref, { articles: updatedArticles, createdAt });
         } else {
           // Create a new document
-          await setDoc(docSnap.ref, { articles: mergedArticles, createdAt});
+            const updatedArticles = mergedArticles.map(article => ({
+            ...article,
+            like,
+            readStatus,
+            }));
+            await setDoc(docSnap.ref, { articles: updatedArticles, createdAt });
         }
 
         console.log("News data stored successfully");
@@ -83,7 +95,6 @@ export const StoreNewsData: React.FC<StoreNewsDataProps> = ({ newsData, redirect
   // This component doesn't render anything visible
   return null;
 }
-
 export const StoreNewsDataCategory: React.FC<StoreNewsDataCategoryProps & { categoryNewsId?: string }> = ({ newsData, redirectTo, collectionName, categoryNewsId }) => {
   const { addData } = AddFireStoreData(collectionName);
   const hasStored = useRef(false);
@@ -93,8 +104,17 @@ export const StoreNewsDataCategory: React.FC<StoreNewsDataCategoryProps & { cate
     async function storeAndRedirect() {
       if (newsData && !hasStored.current) {
         try {
+          const createdAt = serverTimestamp(); 
+          const like = 0; 
+          const readStatus = false; 
+
+          const mergedArticles = newsData.articles.map((article: any) => ({
+            ...article,
+            like,
+            readStatus
+          }));
           // Store the news data
-          await addData({ articles: newsData.articles, categoryNewsId});
+          await addData({ articles: mergedArticles, categoryNewsId, createdAt});
           console.log("News data stored successfully");
           hasStored.current = true;
           
@@ -119,12 +139,12 @@ export const StoreNewsDataCategory: React.FC<StoreNewsDataCategoryProps & { cate
 
 export const UpdateNewsDataCategory: React.FC<StoreNewsDataCategoryProps & { categoryNewsId?: string }> = ({ newsData, redirectTo, collectionName, categoryNewsId }) => {
   const hasStored = useRef(false);
-  const router = useRouter(); 
+  const router = useRouter();
+
 
   useEffect(() => {
     async function storeAndRedirect() {
       if (!newsData || hasStored.current || !categoryNewsId) return;
-
       try {
         const collectionRef = collection(firestoreDb, collectionName);
         const q = query(collectionRef, where("categoryNewsId", "==", categoryNewsId), limit(1)); // Get the latest document
@@ -146,7 +166,7 @@ export const UpdateNewsDataCategory: React.FC<StoreNewsDataCategoryProps & { cat
           await updateDoc(docSnap.ref, { articles: mergedArticles });
         } else {
           // Create a new document
-          await setDoc(docSnap, { articles: mergedArticles, categoryNewsId });
+          await addDoc(docSnap, { articles: mergedArticles, categoryNewsId });
         }
 
         console.log("News data stored successfully");

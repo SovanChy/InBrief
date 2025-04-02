@@ -32,6 +32,8 @@ interface Article {
   description?: string;
   publishedAt: string;
   summary: string;
+  like: number;
+  readStatus: boolean; 
 }
 
 interface NewsFeedProps {
@@ -138,10 +140,6 @@ export default function NewsFeed({ articles, id }: NewsFeedProps & idProps) {
             <div>
               <h2 className="text-2xl font-bold">Explore</h2>
             </div>
-            <Button variant="outline" size="sm">
-              <Filter className="h-4 w-4 mr-2" />
-              Filter
-            </Button>
           </div>
 
           {/* Trending Section */}
@@ -161,8 +159,8 @@ export default function NewsFeed({ articles, id }: NewsFeedProps & idProps) {
                   readTime="5 min"
                   source={article.url}
                   preview={article.description || "Click to read more..."}
-                  likes="0"
-                  comments="0"
+                  like={article.like}
+                  readStatus={article.readStatus}
                   tags={[{ label: "unread", color: "blue" }]}
                   openAiCollectionName="news"
 
@@ -196,13 +194,14 @@ interface ArticleCardProps {
   readTime: string;
   source: string;
   preview: string;
-  likes: string;
-  comments: string;
+  like: number;
+  readStatus: boolean;
   tags: { label: string; color: string }[];
   openAiCollectionName: string
+  
 }
 
-function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, source, preview, likes, comments, tags, id, openAiCollectionName}: ArticleCardProps & idProps) {
+function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, source, preview, like, tags, id, openAiCollectionName, readStatus}: ArticleCardProps & idProps) {
   const handleClick = () => {
     // Get the parent component's handleArticleClick function
     const article = {
@@ -217,9 +216,9 @@ function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, s
       image,
       preview,
       content: preview,
-      likes,
-      comments,
+      like,
       tags,
+      readStatus, 
       openAiCollectionName,
     };
     // Find the NewsFeed component and call its handleArticleClick function
@@ -305,7 +304,7 @@ function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, s
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="sm" className="h-8 px-2">
               <ThumbsUp className="h-4 w-4 mr-1" />
-              {likes}
+              {like}
             </Button>
           </div>
 

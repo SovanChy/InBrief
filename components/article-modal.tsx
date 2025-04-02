@@ -24,7 +24,8 @@ interface ArticleModalProps {
     content: string
     preview: string
     summary: string
-    likes: string
+    like: number
+    readStatus: boolean
     comments: string
     tags: { label: string; color: string }[]
     openAiCollectionName: string
@@ -37,6 +38,11 @@ export default function ArticleModal({ article, isOpen, onClose}: ArticleModalPr
   const [response, setResponse] = useState("")
   const [responseFromDatabase, setResponseFromDatabase] = useState("")
   const [loading, setLoading] = useState(false)
+
+
+  const handleLike = (): void => {
+
+  }
   
  
 
@@ -145,15 +151,17 @@ export default function ArticleModal({ article, isOpen, onClose}: ArticleModalPr
               {article.tags.map((tag, index) => (
                  
                  <div>
-                <Badge
-                  key={index}
-                  variant={tag.color === "blue" ? "default" : "secondary"}
-                  className={tag.color === "blue" ? (tag.label === "read" ? "bg-blue-900" : "bg-blue-950") : ""}
-                >
-                  {tag.label}
-                </Badge>
+                 
+                    <Badge
+                    key={index}
+                    variant={article.readStatus ? "secondary" : "default"}
+                    className={`${article.readStatus ? (tag.label === "read" ? "read" : "") : (tag.label === "unread" ? "unread" : "")} ${tag.label === "unread" ? "bg-blue-950" : ""}`}
+                    >
+                    {tag.label}
+                    </Badge>
 
-              
+               
+
                 </div>
               ))}
 
@@ -261,7 +269,7 @@ export default function ArticleModal({ article, isOpen, onClose}: ArticleModalPr
           <div className="flex items-center gap-4 py-4 border-t border-b mb-6">
             <Button variant="ghost" size="sm" className="gap-2">
               <ThumbsUp className="h-4 w-4" />
-              {article.likes}
+              {article.like}
             </Button>
             <Button variant="ghost" size="sm" className="gap-2">
               <Share2 className="h-4 w-4" />

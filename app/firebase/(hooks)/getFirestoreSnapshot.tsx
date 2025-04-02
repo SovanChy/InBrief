@@ -6,6 +6,7 @@ import { firestoreDb } from "../firebase";
 export const getFirestoreSnapshot = (collectionName: string) => {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<any | null>([])
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -21,6 +22,8 @@ export const getFirestoreSnapshot = (collectionName: string) => {
       (error) => {
         console.error("Error fetching data:", error);
         setLoading(false);
+        setError((error as Error).message)
+
       }
     );
 
@@ -28,7 +31,7 @@ export const getFirestoreSnapshot = (collectionName: string) => {
     return () => unsubscribe();
   }, [collectionName]);
 
-  return { data, loading };
+  return { data, loading, error };
 };
 
 // New function with category filtering
@@ -71,6 +74,7 @@ export const getFirestoreSnapshot = (collectionName: string) => {
 export const getFirestoreSnapshotByCategory = (collectionName: string, categoryNewsId: string) => {
   const [data, setData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<any | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -83,18 +87,23 @@ export const getFirestoreSnapshotByCategory = (collectionName: string, categoryN
         if (!querySnapshot.empty) {
           const doc = querySnapshot.docs[0]; // Fetch only the first document
           setData({ id: doc.id, ...doc.data() });
+          setLoading(false)
         } else {
           setData(null);
+          setLoading(false)
         }
       } catch (error) {
         console.error("Error fetching document by category:", error);
+        setError((error as Error).message)
+        setLoading(false)
       }
+
       setLoading(false);
     };
 
     fetchData();
   }, [collectionName, categoryNewsId]);
 
-  return { data, loading };
+  return { data, loading, error };
 };
 

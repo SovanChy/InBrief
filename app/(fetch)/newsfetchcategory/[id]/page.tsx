@@ -1,7 +1,7 @@
 import { initializeApp, getApps, cert } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
-import { StoreNewsDataCategory } from "@/components/storenewsdata";
+import {  StoreNewsDataCategory } from "@/components/storenewsdata";
 
 function initFirebase() {
   if (getApps().length === 0) {
@@ -43,7 +43,8 @@ export default async function Page({ params }: { params: { id: string } }) {
     .get();
 
   if (!storedNewsSnapshot.empty) {
-    data = storedNewsSnapshot.docs.map((doc) => doc.data());
+    const firstDoc = storedNewsSnapshot.docs[0];
+    data = firstDoc ? firstDoc.data() : null;
     data = JSON.parse(JSON.stringify(data));
     loading = false;
   } else {

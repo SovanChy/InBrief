@@ -52,7 +52,7 @@ export default function EditCategoryModal({isOpen, onClose, onCreateCategory, id
 {
     const { userId } = useAuth() || { userId: '' }
     const userIdString = userId || ''
-    // const categoryNewsId = uuidv4()
+    const categoryNewsId = uuidv4()
     const [name, setName] = useState("")
     const [sourcesOpen, setSourcesOpen] = useState(false)
     const [selectedSources, setSelectedSources] = useState<string[]>([])
@@ -95,7 +95,10 @@ export default function EditCategoryModal({isOpen, onClose, onCreateCategory, id
             uid: userIdString,
             source: selectedSources,
             includeKeyword: includeKeywords,
-            excludeKeyword: excludeKeywords
+            excludeKeyword: excludeKeywords,
+            categoryNewsId: categoryNewsId
+
+
         }
         onCreateCategory(category)
         updateData(id, category)
