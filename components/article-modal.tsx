@@ -39,10 +39,43 @@ export default function ArticleModal({ article, isOpen, onClose}: ArticleModalPr
   const [responseFromDatabase, setResponseFromDatabase] = useState("")
   const [loading, setLoading] = useState(false)
 
+  
 
-  const handleLike = (): void => {
+  async function handleLike (index: number, collectionName: string) {
+    if (!article?.id) {
+      console.error("Article ID is undefined!");
+      return;
+    }
+    const docRef = doc(firestoreDb, collectionName, article.id);
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+      console.error("Document not found!");
+      return;
+    }
+
+    let docData = docSnap.data() as { [key: string]: any }; // Replace with the actual type if known
+    let articles = docData.articles || []; // Ensure it's an array
+
+    if (article.arrayIndex < 0 || article.arrayIndex >= articles.length) {
+      console.error(`Index ${index} is out of bounds.`);
+      return;
+    }
+
+    // Check if the value exists at that index
+    if (articles[article.arrayIndex] === undefined) {
+      console.log(`No article found at index ${article.arrayIndex}.`);
+      return;
+    }
+    
+
+   
 
   }
+
+  const handleShare = (articleSource: string) => {
+
+  }
+
   
  
 

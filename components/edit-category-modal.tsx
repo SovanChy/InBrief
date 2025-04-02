@@ -61,7 +61,8 @@ export default function EditCategoryModal({isOpen, onClose, onCreateCategory, id
     const [includeKeywords, setIncludeKeywords] = useState<string[]>([])
     const [excludeKeywords, setExcludeKeywords] = useState<string[]>([])
     const [existingCategoryData, setExistingCategoryData] = useState<any>(null) // Store existing category data
-    const {updateData} = AddFireStoreData('categoryPreferences')
+    const [oldCategoryNewsId, setOldCategoryNewsId] = useState<string>()
+    const {updateData,addData, deleteDataWithCategoryNewsId} = AddFireStoreData('categoryPreferences')
 
     useEffect(() => {
         if (isOpen && id) {
@@ -79,6 +80,7 @@ export default function EditCategoryModal({isOpen, onClose, onCreateCategory, id
                     setSelectedSources(categoryData.source || [])
                     setIncludeKeywords(categoryData.includeKeyword || [])
                     setExcludeKeywords(categoryData.excludeKeyword || [])
+                    setOldCategoryNewsId(categoryData.categoryNewsId || "")
                 } else {
                     console.log("No such category!")
                 }
@@ -88,7 +90,7 @@ export default function EditCategoryModal({isOpen, onClose, onCreateCategory, id
         }
     }, [isOpen, id])
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         const category = {
             name: name,
@@ -101,7 +103,8 @@ export default function EditCategoryModal({isOpen, onClose, onCreateCategory, id
 
         }
         onCreateCategory(category)
-        updateData(id, category)
+        await deleteDataWithCategoryNewsId(oldCategoryNewsId || "")
+        await addData(category)
         resetForm()
         onClose()
     }

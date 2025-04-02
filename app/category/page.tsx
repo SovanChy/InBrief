@@ -90,7 +90,7 @@ const Category = () => {
           <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin mb-4"></div>
           <div className="text-gray-700 mb-4">Loading</div>
         </div>
-      )  : categoriesData && categoriesData.length > 0 ? (
+      ) : (
     <div className="flex w-full h-screen">
       <SidebarComponent activeTab="categories" setActiveTab={() => {}} />
       <main className="flex-1 overflow-y-auto bg-white dark:bg-gray-800 ml-24 p-4">
@@ -264,6 +264,7 @@ const Category = () => {
               </Card>
             </div>
           ))}
+          
         <CreateCategoryModal
           isOpen={isCategoryModalOpen}
           onClose={() => setIsCategoryModalOpen(false)}
@@ -290,11 +291,7 @@ const Category = () => {
       </main>
   </div>
 
-) : (
-  <div className="flex flex-col justify-center items-center h-screen">
-    {error ? <p>{error}</p> : <p>An unexpected error occurred. Please try again later.</p>}
-</div>
-)}
+) }
 </div>)}
 
 

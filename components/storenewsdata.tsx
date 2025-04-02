@@ -157,16 +157,25 @@ export const UpdateNewsDataCategory: React.FC<StoreNewsDataCategoryProps & { cat
         if (docSnap.exists()) {
           existingArticles = docSnap.data().articles || [];
         }
+        
+        const like = 0; 
+        const readStatus = false; 
+        const mergedArticles = newsData.articles.map((article: any) => ({
+          ...article,
+          like,
+          readStatus
+        }));
 
         //  Merge new articles at index 0, pushing older ones back
-        const mergedArticles = [...newsData.articles, ...existingArticles];
+        const updatedArticles = [...mergedArticles, ...existingArticles];
 
+      
         if (docSnap.exists()) {
           // Update the existing document
-          await updateDoc(docSnap.ref, { articles: mergedArticles });
+          await updateDoc(docSnap.ref, { articles: updatedArticles });
         } else {
           // Create a new document
-          await addDoc(docSnap, { articles: mergedArticles, categoryNewsId });
+          await addDoc(docSnap, { articles: updatedArticles, categoryNewsId });
         }
 
         console.log("News data stored successfully");
