@@ -4,9 +4,7 @@ import { JSDOM } from 'jsdom'
 import { Readability } from '@mozilla/readability'
 
 interface ArticleResult {
-  title: string;
   url: string;
-  description: string;
   textContent?: string;
 }
 
@@ -27,14 +25,19 @@ export async function GET(request: NextRequest) {
 
     // const newsResponse = await axios.get(link);
     const firstResult = {
-      title: "BBC Programmes",
       url: link,
-      description: "BBC Programmes page content"
     };
 
-    // Fetch article HTML
-    const articleResponse = await axios.get(firstResult.url);
+    // const agent = new https.Agent({ rejectUnauthorized: false });
 
+    // Fetch article HTML
+    // const articleResponse = await axios.get(firstResult.url);
+    const articleResponse = await axios.get(firstResult.url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+      }
+    });
     // Parse HTML with Readability
     const dom = new JSDOM(articleResponse.data, {
       url: firstResult.url
@@ -44,9 +47,7 @@ export async function GET(request: NextRequest) {
 
     // Construct response
     const scrapedResult: ArticleResult = {
-      title: firstResult.title,
       url: firstResult.url,
-      description: firstResult.description,
       textContent: article?.textContent || ''
     };
 

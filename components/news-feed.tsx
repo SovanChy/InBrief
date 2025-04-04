@@ -162,7 +162,6 @@ export default function NewsFeed({ articles, id }: NewsFeedProps & idProps) {
                   preview={article.description || "Click to read more..."}
                   like={article.like}
                   readStatus={article.readStatus}
-                  tags={[{ label: "unread", color: "blue" }]}
                   openAiCollectionName="news"
                   likesBy = {Array.isArray(article.likesBy) ? article.likesBy : null}
 
@@ -201,13 +200,12 @@ interface ArticleCardProps {
   preview: string;
   like: number;
   readStatus: boolean;
-  tags: { label: string; color: string }[];
   openAiCollectionName: string;
   likesBy: string[] | null;
   
 }
 
-function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, source, preview, like, tags, id, openAiCollectionName, readStatus,likesBy}: ArticleCardProps & idProps) {
+function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, source, preview, like, id, openAiCollectionName, readStatus,likesBy}: ArticleCardProps & idProps) {
   const {userId} = useAuth()
   const handleClick = () => {
     // Get the parent component's handleArticleClick function
@@ -224,7 +222,6 @@ function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, s
       preview,
       content: preview,
       like,
-      tags,
       readStatus, 
       openAiCollectionName,
       likesBy,
@@ -252,21 +249,7 @@ function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, s
         <div className="flex justify-between items-start">
           <h4 className="text-lg font-bold mb-1 pr-2">{title}</h4>
           <div className="flex items-center gap-1 flex-shrink-0">
-            {tags.map((tag, index) => (
-              <Badge
-                key={index}
-                variant={tag.color === "blue" ? "default" : "secondary"}
-                className={`inline-flex items-center h-6 px-2 text-xs ${
-                  tag.color === "blue"
-                    ? tag.label === "read"
-                      ? "bg-blue-900"
-                      : "bg-blue-950"
-                    : ""
-                }`}
-              >
-                {tag.label}
-              </Badge>
-            ))}
+            
             <Button
               variant="ghost"
               size="icon"

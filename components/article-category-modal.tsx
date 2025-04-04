@@ -2,15 +2,15 @@
 
 import { useState, useEffect} from "react"
 import Image from "next/image"
-import { X, ThumbsUp, MessageSquare, Share2, MoreHorizontal, Clock } from "lucide-react"
+import { X, ThumbsUp, Share2, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tab"
 import { firestoreDb } from "@/app/firebase/firebase"
 import { doc, updateDoc, getDoc, arrayUnion, arrayRemove, increment, deleteField, collection } from "firebase/firestore";
 import { useAuth } from "@clerk/nextjs"
-import { getFireStoreDataToday } from "@/app/firebase/(hooks)/getFireStoreDataToday"
 import { getFireStoreDataCategory } from "@/app/firebase/(hooks)/getFireStoreDataToday"
+import { CheckCircle } from "lucide-react"
+
 
 
 interface ArticleCategoryModalProps {
@@ -41,37 +41,13 @@ interface ArticleCategoryModalProps {
 export default function ArticleCategoryModal({ article, isOpen, onClose, collectionName, categoryNewsId}: ArticleCategoryModalProps) {
   const [response, setResponse] = useState("")
   const [loading, setLoading] = useState(false)
+  const [alert, setAlert] = useState(false)
   const {userId} = useAuth()
   const { data, id } = getFireStoreDataCategory("categoryNews", categoryNewsId);
 
   //get current like 
   const [liveArticles, setLiveArticles] = useState<any>(null);
-  // const [data, setData] = useState<any>(null);
-
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     try {
-  //       if (collectionName === "news") {
-  //         // getFireStoreDataToday appears to be a synchronous function
-  //         // but you're treating its return value as if it has data and id properties
-  //         const result =  getFireStoreDataToday("news");
-  //         setData(result.data);
-  //       } else if (collectionName === "categoryNews" && categoryNewsId) {
-  //         const result =  getFireStoreDataCategory("categoryNews", categoryNewsId);
-  //         setData(result.data);
-  //       } else {
-  //         console.error("Invalid collectionName or missing categoryNewsId");
-  //         return;
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching Firestore data:", error);
-  //     }
-  //   }
-    
-  //   fetchData();
-  // }, [collectionName, categoryNewsId]); // ✅ Dependency array
-  
-  // Separate useEffect for handling data transformation
+ 
   useEffect(() => {
     if (!data) return;
     
@@ -139,6 +115,15 @@ export default function ArticleCategoryModal({ article, isOpen, onClose, collect
   }
 
   const handleShare = (articleSource: string) => {
+    const website = window.location.origin; // Gets the base URL dynamically
+    const link = articleSource;    
+    navigator.clipboard.writeText(link).then(() => {
+    console.log("Link copied to clipboard:", link);
+    setAlert(true)
+    setTimeout(() => setAlert(false), 1500)
+    }).catch((err) => {
+      console.error("Failed to copy link to clipboard:", err);
+    });
 
   }
 
@@ -247,22 +232,7 @@ export default function ArticleCategoryModal({ article, isOpen, onClose, collect
           <div className="flex justify-between items-start mb-4">
             <h1 className="text-2xl font-bold">{article.title}</h1>
             <div className="flex gap-2 ml-2 flex-shrink-0">
-              {article.tags.map((tag, index) => (
-                 
-                 <div>
-                 
-                    <Badge
-                    key={index}
-                    variant={article.readStatus ? "secondary" : "default"}
-                    className={`${article.readStatus ? (tag.label === "read" ? "read" : "") : (tag.label === "unread" ? "unread" : "")} ${tag.label === "unread" ? "bg-blue-950" : ""}`}
-                    >
-                    {tag.label}
-                    </Badge>
-
-               
-
-                </div>
-              ))}
+             
 
               {/* <Button variant="ghost" size="icon" onClick={() => {console.log(article.arrayIndex)}}>test index</Button>
               <Button variant="ghost" size="icon" onClick={() => {console.log(article.id)}}>test article id</Button> */}
@@ -377,10 +347,16 @@ export default function ArticleCategoryModal({ article, isOpen, onClose, collect
               {liveArticles[article.arrayIndex].like}
               </Button>
             )}
-            <Button variant="ghost" size="sm" className="gap-2">
-              <Share2 className="h-4 w-4" />
-              Share
-            </Button>
+            {alert ? (  <Button variant="ghost" size="sm" className="gap-2" onClick={() => handleShare(article.source)}>
+               <CheckCircle color="green" size={24} />
+                <p>Link is copied</p>
+                  </Button>) : (
+                  <Button variant="ghost" size="sm" className="gap-2" onClick={() => handleShare(article.source)}>
+                  <Share2 className="h-4 w-4" />
+                  Share
+                </Button>
+            )}
+          
           </div>
 
          
