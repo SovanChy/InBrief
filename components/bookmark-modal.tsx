@@ -6,12 +6,11 @@ import { X, ThumbsUp, Share2, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tab"
 import { firestoreDb } from "@/app/firebase/firebase"
-import { doc, updateDoc, getDoc} from "firebase/firestore";
+import { doc, updateDoc, getDoc, arrayUnion, arrayRemove, increment, deleteField, collection } from "firebase/firestore";
 import { useAuth } from "@clerk/nextjs"
 import { getFireStoreDataToday } from "@/app/firebase/(hooks)/getFirestoreSnapshot"
 import { CheckCircle } from "lucide-react"
 import { AddFireStoreData } from "@/app/firebase/(hooks)/addFireStoreData"
-import { Alert, AlertDescription } from "./ui/alert"
 
 
 interface ArticleModalProps {
@@ -39,53 +38,46 @@ interface ArticleModalProps {
   onClose: () => void
 }
 
-export default function ArticleModal({ article, isOpen, onClose, collectionName, categoryNewsId}: ArticleModalProps) {
+export default function BookmarkModal({ article, isOpen, onClose, collectionName, categoryNewsId}: ArticleModalProps) {
   const [response, setResponse] = useState("")
   const [loading, setLoading] = useState(false)
   const {userId} = useAuth()
   const clerkId = userId || '';
 
   //add Bookmark
-  const {addDataBookMark} = AddFireStoreData("bookmarks")
+  const {addDataBookMark, deleteDataBookMark} = AddFireStoreData("bookmarks")
 
   //share alert
   const [alert, setAlert] = useState(false)
-  //bookmark alert
-  const [bookmarkAlert, setBookmarkAlert] = useState(false)
 
-  const { data, id } = getFireStoreDataToday('news');
+  const { data, id } = getFireStoreDataToday('bookmarks');
 
-  //get current like 
-  const [liveArticles, setLiveArticles] = useState<any>(null);
+   //get current like 
+   const [liveArticles, setLiveArticles] = useState<any>(null);
 
   
-  useEffect(() => {
-    if (!data) return;
-    
-    console.log("Raw Firestore data:", data);
-    
-    if (data.docData && Array.isArray(data.docData.articles)) {
-      setLiveArticles(data.docData.articles);
-      console.log("Articles set successfully:", data.docData.articles);
-    } else {
-      console.log("No articles found in the data structure");
-    }
-  }, [data]);
-  
+   useEffect(() => {
+     if (!data) return;
+     
+     console.log("Raw Firestore data:", data);
+     
+     if (data.docData && Array.isArray(data.docData.articles)) {
+       setLiveArticles(data.docData.articles);
+       console.log("Articles set successfully:", data.docData.articles);
+     } else {
+       console.log("No articles found in the data structure");
+     }
+   }, [data]);
 
-  const handleBookmark = async (article: any) => {
+
+  const handleBookmark = async (index: number, id: string) => {
     try {
       if (!article || !clerkId) {
         console.error("Invalid article or user ID");
         return;
       }
 
-      await addDataBookMark({
-        ...article,
-      }, clerkId);
-
-      setBookmarkAlert(true)
-      setTimeout(() => setBookmarkAlert(false), 1500)
+      await deleteDataBookMark(index, clerkId);
 
       console.log("Article bookmarked successfully");
     } catch (error) {
@@ -263,26 +255,16 @@ export default function ArticleModal({ article, isOpen, onClose, collectionName,
           <div className="flex justify-between items-start mb-4">
             <h1 className="text-2xl font-bold">{article.title}</h1>
             <div className="flex gap-2 ml-2 flex-shrink-0">
-            
-
-
-              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleBookmark(article)}>
-               
-            
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-4 w-4"
-                >
-                  <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-                </svg>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex items-center gap-2 px-4 py-2 border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors duration-200"
+                onClick={() => {
+                  handleBookmark(article.arrayIndex, clerkId);
+                  onClose();
+                }}
+              >
+                Remove
               </Button>
             </div>
           </div>
@@ -363,6 +345,7 @@ export default function ArticleModal({ article, isOpen, onClose, collectionName,
             />
           </div>
 
+
           <div className="flex items-center gap-4 py-4 border-t border-b mb-6">
             {liveArticles[article.arrayIndex].likesBy?.includes(userId) ? (
             <Button variant="ghost" size="sm" className="gap-2" onClick={() => handleLike(article.arrayIndex, article.openAiCollectionName)}>
@@ -385,22 +368,24 @@ export default function ArticleModal({ article, isOpen, onClose, collectionName,
                 </Button>
             )}
           </div>
+              
+
+
+          {alert ? (  <Button variant="ghost" size="sm" className="gap-2" onClick={() => handleShare(article.source)}>
+                  <CheckCircle color="green" size={24} />
+                 <p>Link is copied</p>
+                   </Button>) : (
+                  <Button variant="ghost" size="sm" className="gap-2" onClick={() => handleShare(article.source)}>
+                  <Share2 className="h-4 w-4" />
+                  Share
+                </Button>
+            )}
+
+         
 
          
         </div>
       </div>
-
-      {bookmarkAlert && (
-         <div className="fixed inset-0 bg-black/50 z-80 flex items-center justify-center">
-              <Alert className="relative w-full max-w-xl bg-white text-white rounded-lg overflow-hidden">
-                <CheckCircle color="green" size={24} />
-                <AlertDescription>Your article is bookmarked</AlertDescription>
-              </Alert>
-            </div>
-      )}
-   
-
-          
     </div>
   )
 }

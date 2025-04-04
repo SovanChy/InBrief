@@ -8,8 +8,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tab"
 import { firestoreDb } from "@/app/firebase/firebase"
 import { doc, updateDoc, getDoc, arrayUnion, arrayRemove, increment, deleteField, collection } from "firebase/firestore";
 import { useAuth } from "@clerk/nextjs"
-import { getFireStoreDataCategory } from "@/app/firebase/(hooks)/getFireStoreDataToday"
+import { getFireStoreDataCategory } from "@/app/firebase/(hooks)/getFirestoreSnapshot"
 import { CheckCircle } from "lucide-react"
+import { AddFireStoreData } from "@/app/firebase/(hooks)/addFireStoreData"
+import { Alert, AlertDescription } from "./ui/alert"
+
 
 
 
@@ -45,6 +48,31 @@ export default function ArticleCategoryModal({ article, isOpen, onClose, collect
   const {userId} = useAuth()
   const { data, id } = getFireStoreDataCategory("categoryNews", categoryNewsId);
 
+  //add Bookmark
+    const {addDataBookMark} = AddFireStoreData("bookmarks")
+    const [bookmarkAlert, setBookmarkAlert] = useState(false)
+    const clerkId = userId || ""
+
+    const handleBookmark = async (article: any) => {
+      try {
+        if (!article || !clerkId) {
+          console.error("Invalid article or user ID");
+          return;
+        }
+  
+        await addDataBookMark({
+          ...article,
+        }, clerkId);
+  
+        setBookmarkAlert(true)
+        setTimeout(() => setBookmarkAlert(false), 1500)
+  
+        console.log("Article bookmarked successfully");
+      } catch (error) {
+        console.error("Error bookmarking article:", error);
+      }
+    };
+
   //get current like 
   const [liveArticles, setLiveArticles] = useState<any>(null);
  
@@ -60,6 +88,9 @@ export default function ArticleCategoryModal({ article, isOpen, onClose, collect
       console.log("No articles found in the data structure");
     }
   }, [data]);
+
+
+ 
   
   
   
@@ -238,24 +269,24 @@ export default function ArticleCategoryModal({ article, isOpen, onClose, collect
               <Button variant="ghost" size="icon" onClick={() => {console.log(article.id)}}>test article id</Button> */}
 
 
-              <Button variant="ghost" size="icon" className="h-6 w-6">
+<Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleBookmark(article)}>
                
             
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-4 w-4"
-                >
-                  <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-                </svg>
-              </Button>
+               <svg
+                 xmlns="http://www.w3.org/2000/svg"
+                 width="24"
+                 height="24"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 strokeWidth="2"
+                 strokeLinecap="round"
+                 strokeLinejoin="round"
+                 className="h-4 w-4"
+               >
+                 <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+               </svg>
+             </Button>
             </div>
           </div>
 
@@ -362,6 +393,14 @@ export default function ArticleCategoryModal({ article, isOpen, onClose, collect
          
         </div>
       </div>
+      {bookmarkAlert && (
+         <div className="fixed inset-0 bg-black/50 z-80 flex items-center justify-center">
+              <Alert className="relative w-full max-w-xl bg-white text-white rounded-lg overflow-hidden">
+                <CheckCircle color="green" size={24} />
+                <AlertDescription>Your article is bookmarked</AlertDescription>
+              </Alert>
+            </div>
+      )}
     </div>
   )
 }

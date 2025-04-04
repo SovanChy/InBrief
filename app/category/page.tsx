@@ -30,8 +30,8 @@ import { useRouter } from "next/navigation";
 import CreateCategoryModal from "@/components/create-category-modal";
 import EditCategoryModal from "@/components/edit-category-modal";
 import { DocumentData } from "firebase/firestore";
-import { getFirestoreSnapshot } from "../firebase/(hooks)/getFirestoreSnapshot";
 import { AddFireStoreData } from "../firebase/(hooks)/addFireStoreData";
+import { getFirestoreSnapshot } from "../firebase/(hooks)/getFirestoreSnapshot";
 
 const Category = () => {
   const { data, loading, error} = getFirestoreSnapshot("categoryPreferences");

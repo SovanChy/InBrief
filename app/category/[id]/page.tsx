@@ -3,9 +3,7 @@ import React, { useEffect, useState } from 'react';
 import CategoryFeed from '@/components/category-feed';
 import { useParams } from "next/navigation";
 import { Button } from '@/components/ui/button';
-import { getFirestoreSnapshotByCategory } from '@/app/firebase/(hooks)/getFirestoreSnapshot';
-import { getFireStoreDataCategory } from '@/app/firebase/(hooks)/getFireStoreDataToday';
-
+import { getFireStoreDataCategory } from '../../firebase/(hooks)/getFirestoreSnapshot';
 export default function Page() {
     const params = useParams(); 
     const categoryId = params.id; 

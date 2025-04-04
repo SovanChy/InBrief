@@ -6,7 +6,7 @@ import { DocumentData } from "firebase/firestore";
 import { useNewsData } from '../firebase/useNewsData';
 import { AddFireStoreData } from '../firebase/(hooks)/addFireStoreData';
 import { Button } from '@/components/ui/button';
-import { getFireStoreDataToday } from '../firebase/(hooks)/getFireStoreDataToday';
+import { getFireStoreDataToday } from '../firebase/(hooks)/getFirestoreSnapshot';
 
 export default function Page() {
   const [articles, setArticles] = useState<any>(null);

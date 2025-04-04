@@ -1,5 +1,5 @@
 'use client'
-import { collection, addDoc, serverTimestamp, doc, deleteDoc, updateDoc, query, where, getDocs, getDoc} from "firebase/firestore";
+import { collection, addDoc,arrayUnion,  serverTimestamp, doc, setDoc, deleteDoc, updateDoc, query, where, getDocs, getDoc} from "firebase/firestore";
 import { firestoreDb } from '../firebase';
 import { DocumentData } from "firebase/firestore";
 
@@ -20,6 +20,52 @@ export const AddFireStoreData = (collectionName: string) => {
             console.log(err)
         }
     }
+    const addDataBookMark = async (document: any, id: string) => {
+      try {
+      const createdAt = serverTimestamp();
+      const docRef = doc(firestoreDb, collectionName, id);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const currentData = docSnap.data();
+        const updatedArticles = [document, ...(currentData.articles || [])]; // Add new document at index 0
+        await setDoc(docRef, {
+        articles: updatedArticles,
+        createdAt: createdAt,
+        uid: id,
+        }, { merge: true });
+      } else {
+        await setDoc(docRef, {
+        articles: [document], // Initialize with the new document
+        createdAt: createdAt,
+        uid: id,
+        });
+      }
+      } catch (err) {
+      console.log(err);
+      }
+    };
+
+    const deleteDataBookMark = async (index: number, id: string) => {
+      try {
+        const docRef = doc(firestoreDb, collectionName, id);
+        const docSnap = await getDoc(docRef);
+    
+        if (docSnap.exists()) {
+          const currentData = docSnap.data();
+          const updatedArticles = [...currentData.articles]; // Create a copy
+          updatedArticles.splice(index, 1); // Remove at index
+    
+          await updateDoc(docRef, {
+            articles: updatedArticles // Replace the entire array
+          });
+        } else {
+        }
+      } catch (err) {
+        console.error("Error removing bookmark:", err);
+        alert("Failed to unbookmark");
+      }
+    };
 
 
     const deleteData = async (id: string) => {
@@ -114,7 +160,7 @@ const deleteDataWithCategoryNewsId = async (categoryNewsId: string) => {
 
 
 
-    return {addData, deleteData, deleteDataWithCategoryNewsId, updateData}
+    return {addData, deleteData, deleteDataWithCategoryNewsId, updateData, addDataBookMark, deleteDataBookMark}
 
 
     

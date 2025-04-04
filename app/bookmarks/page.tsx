@@ -1,17 +1,58 @@
 'use client'
 import React from 'react'
-import SidebarComponent from '@/components/sidebar'
+import { useState, useEffect } from 'react';
+import { getFireStoreDataBookMarkToday } from '../firebase/(hooks)/getFirestoreSnapshot';
+import { useAuth } from '@clerk/nextjs';
+import BookmarkFeed from '@/components/bookmark-feed';
+
+
 
 export default function page() {
-  return (
+  const {userId} = useAuth();
+  const clerkId = userId || '';
+  const [articles, setArticles] = useState<any[]>([]); // Initialize as empty array
+  const { data, loading, error } = getFireStoreDataBookMarkToday('bookmarks', clerkId);
+  console.log("Bookmark data:", data);
+  console.log("userId:", clerkId);
 
- <div className="flex w-full h-screen">
-        <SidebarComponent activeTab="bookmarks" setActiveTab={() => {}} />                
-          <main className="flex-1 overflow-y-auto bg-white dark:bg-gray-800 ml-24 p-4">
-                <h1>Bookmarks</h1>
-                </main>
-            </div>
+   useEffect(() => {
+          console.log("Raw Firestore data:", data);
       
-
-  )
-}
+          // Ensure that data exists and is properly structured (with docData and articles)
+          if (data && data.docData) {
+            let extractedArticles: any[] = [];
+      
+            // Check if docData has the articles array
+            if (data.docData.articles && Array.isArray(data.docData.articles)) {
+              extractedArticles = [...extractedArticles, ...data.docData.articles];
+            }
+      
+            console.log("Extracted articles:", extractedArticles);
+      
+            if (extractedArticles.length > 0) {
+              setArticles(extractedArticles); // Set the extracted articles
+              console.log("Articles set successfully", extractedArticles);
+            } else {
+              console.log("No articles found in the data structure");
+            }
+          }
+        }, [data]);
+    
+   
+  return (
+    <div>
+       {loading ? (
+        <div className="flex items-center justify-center h-screen">
+          <p className="text-lg">Loading...</p>
+        </div>
+       ) : error ? (
+        <div className="flex items-center justify-center h-screen">
+          <p className="text-lg text-red-500">{error}</p>
+        </div>
+       ) : (
+        <BookmarkFeed articles={articles} id={clerkId} />
+        // <p>testing</p>
+     
+  )}
+  </div>
+)}
