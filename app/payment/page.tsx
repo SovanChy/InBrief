@@ -25,12 +25,20 @@ interface PlanFeature {
 export default function PremiumPage() {
   const [selectedPlan, setSelectedPlan] = useState<"premium" | "freemium" | null>(null)
 
-  const features: PlanFeature[] = [
-    { name: "Browsing", premium: true, freemium: true },
-    { name: "Post Picture", premium: true, freemium: true },
-    { name: "Portfolio Posting", premium: true, freemium: true },
-    { name: "Article Posting", premium: true, freemium: true },
-    { name: "Conduct Events", premium: true, freemium: false },
+  const Free_features: PlanFeature[] = [
+    { name: "Create up to 3 categories", premium: false, freemium: true },
+    { name: "5 AI summarization", premium: false, freemium: true },
+    { name: "10 bookmarks for saved articles", premium: false, freemium: true },
+    { name: "", premium: true, freemium: true },
+    { name: "", premium: true, freemium: false },
+  ]
+
+  const Premium_features: PlanFeature[] = [
+    { name: "Unlimited category creation", premium: true, freemium: false },
+    { name: "Unlimited AI-powered news summarization", premium: true, freemium: true },
+    { name: "Unlimited bookmarks", premium: true, freemium: true },
+    { name: "", premium: true, freemium: true },
+    { name: "", premium: true, freemium: false },
   ]
 
   const handleSelectPlan = (plan: "premium" | "freemium") => {
@@ -61,14 +69,13 @@ export default function PremiumPage() {
                 }`}
               >
                 <CardHeader className="text-center pb-4">
-                  <CardTitle className="text-2xl font-bold">FREEMIUM</CardTitle>
+                  <CardTitle className="text-2xl font-bold">Free-Tier</CardTitle>
                   {selectedPlan === "freemium" && <Badge className="bg-blue-600 absolute top-4 right-4">Selected</Badge>}
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <div className="space-y-4 mb-6">
-                    {features.map((feature, index) => (
-                      <div key={index} className="flex items-center">
-                        <Check className={`h-5 w-5 mr-3 ${feature.freemium ? "text-blue-600" : "text-gray-300"}`} />
+                  <div className="space-y-4 mb-6 mx-6 px-6">
+                    {Free_features.map((feature, index) => (
+                      <div key={index} className="flex items-center mx-6 px-6">
                         <span className="flex-1">
                           {feature.name}
                           {feature.name === "Portfolio Posting" && feature.freemium && (
@@ -104,15 +111,14 @@ export default function PremiumPage() {
                 }`}
               >
                 <CardHeader className="text-center pb-4">
-                  <CardTitle className="text-2xl font-bold">PREMIUM</CardTitle>
+                  <CardTitle className="text-2xl font-bold">Paid-tier</CardTitle>
                   {selectedPlan === "premium" && <Badge className="bg-blue-600 absolute top-4 right-4">Selected</Badge>}
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="space-y-4 mb-6">
-                    {features.map((feature, index) => (
-                      <div key={index} className="flex items-center">
-                        <Check className={`h-5 w-5 mr-3 ${feature.premium ? "text-blue-600" : "text-gray-300"}`} />
-                        <span className="flex-1">
+                    {Premium_features.map((feature, index) => (
+                      <div key={index} className="flex items-center mx-6 px-5">
+                        <span className="flex-1 mx-6 px-6">
                           {feature.name}
                           {feature.name === "Portfolio Posting" && (
                             <span className="text-blue-600 font-medium"> (Unlimited)</span>
@@ -143,7 +149,6 @@ export default function PremiumPage() {
             </div>
       
             <div className="mt-12 text-center text-sm text-gray-500">
-              <p>By subscribing, you agree to our Terms of Service and Privacy Policy.</p>
               <p className="mt-2">Need help? Contact our support team at support@inbrief.com</p>
             </div>
           </div>

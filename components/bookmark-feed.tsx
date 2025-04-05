@@ -140,13 +140,12 @@ export default function BookmarkFeed({ articles, id }: NewsFeedProps & idProps) 
         <main className="flex-1 overflow-y-auto bg-white dark:bg-gray-800 p-6">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-2xl font-bold">Explore</h2>
+              <h2 className="text-2xl font-bold">Bookmark</h2>
             </div>
           </div>
 
           {/* Trending Section */}
           <section className="mb-8">
-            <h3 className="text-xl text-gray-500 mb-4">Latest</h3>
 
             <div className="space-y-6">
             {articles && articles.length > 0 ? (

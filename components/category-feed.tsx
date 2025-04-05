@@ -47,16 +47,19 @@ interface Article {
 interface NewsFeedProps {
   articles: Article[];
   description?: string;
+  categoryName?: string;
 }
 
 interface idProps{
   id: string; 
 }
-export default function CategoryFeed({ articles, id }: NewsFeedProps & idProps) {
+export default function CategoryFeed({ articles, id , categoryName}: NewsFeedProps & idProps) {
  
   const router = useRouter();
   const params = useParams(); 
   const categoryId = params.id;
+
+  
 
   // Article Modal
   const [selectedArticle, setSelectedArticle] = useState<any>(null);
@@ -147,17 +150,13 @@ export default function CategoryFeed({ articles, id }: NewsFeedProps & idProps) 
         <main className="flex-1 overflow-y-auto bg-white dark:bg-gray-800 p-6">
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h2 className="text-2xl font-bold">Explore</h2>
+                    <h2 className="text-2xl font-bold">{categoryName}</h2>
                 </div>
-                <Button variant="outline" size="sm">
-                    <Filter className="h-4 w-4 mr-2" />
-                    Filter
-                </Button>
+                
             </div>
 
             {/* Trending Section */}
             <section className="mb-8">
-                <h3 className="text-xl text-gray-500 mb-4">Latest</h3>
 
                 <div className="space-y-6">
                     {articles.map((article, index) => (

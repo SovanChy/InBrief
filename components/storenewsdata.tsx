@@ -20,6 +20,7 @@ interface StoreNewsDataCategoryProps {
   };
   redirectTo?: string;  // Make the redirect optional
   collectionName: string;
+  categoryName: string; // Optional property for category name
 }
 
 
@@ -95,7 +96,7 @@ export const StoreNewsData: React.FC<StoreNewsDataProps> = ({ newsData, redirect
   // This component doesn't render anything visible
   return null;
 }
-export const StoreNewsDataCategory: React.FC<StoreNewsDataCategoryProps & { categoryNewsId?: string }> = ({ newsData, redirectTo, collectionName, categoryNewsId }) => {
+export const StoreNewsDataCategory: React.FC<StoreNewsDataCategoryProps & { categoryNewsId?: string }> = ({ newsData, redirectTo, collectionName, categoryNewsId, categoryName}) => {
   const { addData } = AddFireStoreData(collectionName);
   const hasStored = useRef(false);
   const router = useRouter(); // Initialize the router
@@ -111,10 +112,10 @@ export const StoreNewsDataCategory: React.FC<StoreNewsDataCategoryProps & { cate
           const mergedArticles = newsData.articles.map((article: any) => ({
             ...article,
             like,
-            readStatus
+            readStatus,
           }));
           // Store the news data
-          await addData({ articles: mergedArticles, categoryNewsId, createdAt});
+          await addData({ articles: mergedArticles, categoryNewsId, createdAt, categoryName});
           console.log("News data stored successfully");
           hasStored.current = true;
           

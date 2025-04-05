@@ -164,7 +164,7 @@ export default function CreateCategoryModal({isOpen, onClose, onCreateCategory} 
                                         <CommandInput placeholder="Search sources..." />
                                         <CommandList>
                                         <CommandEmpty>No source found.</CommandEmpty>
-                                        <CommandGroup heading="test">
+                                        <CommandGroup heading="available sources">
                                             {availableSources && availableSources.map((source) => (
                                                 <CommandItem
                                                     key={source.value}

@@ -404,15 +404,7 @@ export default function BookmarkModal({ article, isOpen, onClose, collectionName
               
 
 
-          {alert ? (  <Button variant="ghost" size="sm" className="gap-2" onClick={() => handleShare(article.source)}>
-                  <CheckCircle color="green" size={24} />
-                 <p>Link is copied</p>
-                   </Button>) : (
-                  <Button variant="ghost" size="sm" className="gap-2" onClick={() => handleShare(article.source)}>
-                  <Share2 className="h-4 w-4" />
-                  Share
-                </Button>
-            )}
+    
 
          
 

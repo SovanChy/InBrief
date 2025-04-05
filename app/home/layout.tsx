@@ -40,8 +40,11 @@ export default function RootLayout({
         <div className="bg-[#1a2942]">
           <header className="container mx-auto px-4 py-4 flex justify-between items-center bg-blue">
             <Link href="/" className="text-white text-2xl font-bold">
-              InBrief
-            </Link>
+            <div className="flex justify-center">
+          <h1 className="text-xl font-bold">
+            In<span className="text-blue-400">Brief</span>
+          </h1>
+        </div>            </Link>
             <div className="flex gap-4">
               <SignedOut>
                 <SignInButton>
