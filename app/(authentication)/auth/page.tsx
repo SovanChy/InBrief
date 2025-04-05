@@ -73,7 +73,7 @@ export default function Page() {
   useEffect(() => {
     if (isLoaded) {
       if (!userId) {
-        router.push("/landingpage");
+        router.push("/home");
       } else if (isSignedIn) {
         router.push("/news");
       }

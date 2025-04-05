@@ -19,6 +19,7 @@ import { Input } from "./ui/input";
 import { Badge } from "./ui/badge";
 import Image from "next/image";
 import CreateCategoryModal from "./create-category-modal";
+import CreateReadSpeedModal from "./create-read-speed-modal";
 import SidebarComponent from "./sidebar";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
@@ -55,6 +56,8 @@ export default function BookmarkFeed({ articles, id }: NewsFeedProps & idProps) 
   const [selectedArticle, setSelectedArticle] = useState<any>(null);
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [isReadSpeedModalOpen, setIsReadSpeedModalOpen] = useState(false);
+
   const [categories, setCategories] = useState<any[]>([]);
 
   //handle article click
@@ -106,6 +109,10 @@ export default function BookmarkFeed({ articles, id }: NewsFeedProps & idProps) 
           </div>
 
           <div className="flex items-center space-x-4">
+          <Button variant="default"  className="bg-blue-950 hover:bg-blue-900" 
+            onClick={() => setIsReadSpeedModalOpen(true)}>
+              Add Reading Speed
+            </Button>
            
             
             <SignedOut>
@@ -183,6 +190,12 @@ export default function BookmarkFeed({ articles, id }: NewsFeedProps & idProps) 
         onClose={() => setIsCategoryModalOpen(false)}
         onCreateCategory={handleCreateCategory}
       />{" "}
+
+
+            <CreateReadSpeedModal
+                  isOpen={isReadSpeedModalOpen}
+                  onClose={() => setIsReadSpeedModalOpen(false)}
+                />{" "}
     </div>
   );
 }

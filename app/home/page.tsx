@@ -12,7 +12,7 @@ import { Facebook, Github, Instagram, Twitter } from "lucide-react"
       {/* Hero Section */}
       <section className="relative h-[400px]">
         <Image
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-9tgJP2gVLuquc3wbEAS1qsQgAHjdsZ.png"
+          src="/images/hero.jpg"
           alt="Person reading news"
           fill
           className="object-cover brightness-50"

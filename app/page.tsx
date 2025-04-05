@@ -12,7 +12,7 @@ export default function Page() {
   useEffect(() => {
     if (isLoaded) {
       if (!userId) {
-        router.push('/landingpage');
+        router.push('/home');
       } else {
         router.push('/news');
       }

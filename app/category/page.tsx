@@ -29,6 +29,7 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import CreateCategoryModal from "@/components/create-category-modal";
 import EditCategoryModal from "@/components/edit-category-modal";
+import CreateReadSpeedModal from "@/components/create-read-speed-modal";
 import { DocumentData } from "firebase/firestore";
 import { AddFireStoreData } from "../firebase/(hooks)/addFireStoreData";
 import { getFirestoreSnapshot } from "../firebase/(hooks)/getFirestoreSnapshot";
@@ -44,6 +45,8 @@ const Category = () => {
   const [categoriesData, setCategoriesData] = useState<DocumentData[]>([]);
   const [alert, setAlert] = useState(false);
   const {deleteDataWithCategoryNewsId} = AddFireStoreData("categoryPreferences");
+  const [isReadSpeedModalOpen, setIsReadSpeedModalOpen] = useState(false);
+
   
 
 
@@ -113,6 +116,10 @@ const Category = () => {
           </div>
 
           <div className="flex items-center space-x-4">
+          <Button variant="default"  className="bg-blue-950 hover:bg-blue-900" 
+            onClick={() => setIsReadSpeedModalOpen(true)}>
+              Add Reading Speed
+            </Button>
             <SignedOut>
               <SignInButton>
                 <Button className="bg-transparent border border-white-500 text-white hover:bg-white/50">
@@ -277,6 +284,11 @@ const Category = () => {
           onCreateCategory={handleEditCategory}
           id={categoryId || ""}
         />{" "}
+
+             <CreateReadSpeedModal
+                          isOpen={isReadSpeedModalOpen}
+                          onClose={() => setIsReadSpeedModalOpen(false)}
+                        />{" "}
 
         {/* Centered Alert */}
   {alert && (

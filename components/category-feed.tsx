@@ -22,6 +22,7 @@ import { Badge } from "./ui/badge";
 import Image from "next/image";
 import ArticleCategoryModal from "./article-category-modal";
 import CreateCategoryModal from "./create-category-modal";
+import CreateReadSpeedModal from "./create-read-speed-modal";
 import SidebarComponent from "./sidebar";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
@@ -61,6 +62,8 @@ export default function CategoryFeed({ articles, id }: NewsFeedProps & idProps) 
   const [selectedArticle, setSelectedArticle] = useState<any>(null);
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [isReadSpeedModalOpen, setIsReadSpeedModalOpen] = useState(false);
+
   const [categories, setCategories] = useState<any[]>([]);
   //handle article click
   const handleArticleClick = (article: any) => {
@@ -114,6 +117,10 @@ export default function CategoryFeed({ articles, id }: NewsFeedProps & idProps) 
             </div>
 
             <div className="flex items-center space-x-4">
+            <Button variant="default"  className="bg-blue-950 hover:bg-blue-900" 
+            onClick={() => setIsReadSpeedModalOpen(true)}>
+              Add Reading Speed
+            </Button>
                 <Button variant="ghost" size="icon" className="rounded-full" onClick={() => handleRefreshClick()}>
                     <RefreshCw className="h-5 w-5" />
                 </Button>
@@ -188,6 +195,11 @@ export default function CategoryFeed({ articles, id }: NewsFeedProps & idProps) 
         onClose={() => setIsCategoryModalOpen(false)}
         onCreateCategory={handleCreateCategory}
     />
+
+      <CreateReadSpeedModal
+            isOpen={isReadSpeedModalOpen}
+            onClose={() => setIsReadSpeedModalOpen(false)}
+          />{" "}
 </div>
   );
 }
