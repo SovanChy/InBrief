@@ -12,6 +12,7 @@ export default function Page() {
   const { user } = useUser();
   const [signInError, setSignInError] = useState<string | null>(null);
   const { isSignedIn } = useAuth();
+  const [isSignedInFirebase, setIsSignedInFirebase] = useState<any>(null)
 
   // Firebase Sign In Effect
   useEffect(() => {
@@ -26,6 +27,7 @@ export default function Page() {
         const token = await getToken({ template: "integration_firebase" });
 
         const userCredentials = await signInWithCustomToken(firebaseAuth, token || "");
+        setIsSignedInFirebase(userCredentials.user.uid);
 
         console.log("User signed in with Firebase", userCredentials);
 
@@ -74,11 +76,11 @@ export default function Page() {
     if (isLoaded) {
       if (!userId) {
         router.push("/home");
-      } else if (isSignedIn) {
+      } else if (isSignedInFirebase) {
         router.push("/news");
       }
     }
-  }, [userId, isLoaded, isSignedIn, router]);
+  }, [userId, isLoaded, isSignedInFirebase, router]);
 
   // Loading state
   if (!isLoaded) {

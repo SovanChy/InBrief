@@ -1,4 +1,6 @@
 'use client'
+import { Timestamp } from 'firebase/firestore'
+
 import { useEffect, useState } from 'react'
 import { X, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -34,6 +36,8 @@ interface EditCategoryModalProps {
         source: string[]
         includeKeyword: string[]
         excludeKeyword: string[]
+        createdAt?: Timestamp
+
     }) => void
     id: string
 }
@@ -62,7 +66,7 @@ export default function EditCategoryModal({isOpen, onClose, onCreateCategory, id
     const [excludeKeywords, setExcludeKeywords] = useState<string[]>([])
     const [existingCategoryData, setExistingCategoryData] = useState<any>(null) // Store existing category data
     const [oldCategoryNewsId, setOldCategoryNewsId] = useState<string>()
-    const {updateData,addData, deleteDataWithCategoryNewsId} = AddFireStoreData('categoryPreferences')
+    const {addData, deleteDataWithCategoryNewsId} = AddFireStoreData('categoryPreferences')
 
     useEffect(() => {
         if (isOpen && id) {
@@ -98,9 +102,9 @@ export default function EditCategoryModal({isOpen, onClose, onCreateCategory, id
             source: selectedSources,
             includeKeyword: includeKeywords,
             excludeKeyword: excludeKeywords,
-            categoryNewsId: categoryNewsId
-
-
+            categoryNewsId: categoryNewsId,
+            Timestamp: Timestamp.now()
+            
         }
         onCreateCategory(category)
         await deleteDataWithCategoryNewsId(oldCategoryNewsId || "")

@@ -10,8 +10,44 @@ export const getFirestoreSnapshot = (collectionName: string) => {
   const [error, setError] = useState<any | null>([])
 
   useEffect(() => {
+    const docRef = collection(firestoreDb, collectionName);
+    const q = query(docRef, orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(
-      collection(firestoreDb, collectionName),
+      q,
+      (snapshot) => {
+        const fetchedData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setData(fetchedData);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+        setError((error as Error).message)
+
+      }
+    );
+
+    // Cleanup function to unsubscribe when component unmounts
+    return () => unsubscribe();
+  }, [collectionName]);
+
+  return { data, loading, error };
+};
+
+//get function for category + userId 
+export const getFireStoreDataCategoryPref = (collectionName: string, uid?:string) => {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<any | null>([])
+
+  useEffect(() => {
+    const docRef = collection(firestoreDb, collectionName);
+    const q = query(docRef, orderBy("createdAt", "desc"), where("uid", "==", uid));
+    const unsubscribe = onSnapshot(
+      q,
       (snapshot) => {
         const fetchedData = snapshot.docs.map(doc => ({
           id: doc.id,
@@ -117,7 +153,7 @@ export const getFireStoreDataBookMarkToday = (collectionName: string, uid?: stri
   
   useEffect(() => {
     const docRef = collection(firestoreDb, collectionName);
-    const q = query(docRef, orderBy("createdAt", "asc"), where("uid", "==", uid));
+    const q = query(docRef, orderBy("createdAt", "desc"), where("uid", "==", uid));
     
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
         if (!querySnapshot.empty) {

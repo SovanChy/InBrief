@@ -32,10 +32,12 @@ import EditCategoryModal from "@/components/edit-category-modal";
 import CreateReadSpeedModal from "@/components/create-read-speed-modal";
 import { DocumentData } from "firebase/firestore";
 import { AddFireStoreData } from "../firebase/(hooks)/addFireStoreData";
-import { getFirestoreSnapshot } from "../firebase/(hooks)/getFirestoreSnapshot";
-
+import { getFireStoreDataCategoryPref } from "../firebase/(hooks)/getFirestoreSnapshot";
+import { useAuth } from "@clerk/nextjs";
 const Category = () => {
-  const { data, loading, error} = getFirestoreSnapshot("categoryPreferences");
+  const {userId} = useAuth()
+  const clerkId = userId || ""; 
+  const { data, loading, error} = getFireStoreDataCategoryPref("categoryPreferences", clerkId);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isEditCategoryModalOpen, setIsEditCategoryModalOpen] = useState(false);
   const [categoryId, setCategoryId] = useState<string | null>(null);
@@ -63,17 +65,17 @@ const Category = () => {
     console.log("Created category:", category);
   };
 
-  const handleShareCategory = (categoryNewsId: string) => {
-    const website = window.location.origin; // Gets the base URL dynamically
-    const link = `${website}/category/${categoryNewsId}`;    
-    navigator.clipboard.writeText(link).then(() => {
-    console.log("Link copied to clipboard:", link);
-    setAlert(true)
-    setTimeout(() => setAlert(false), 1500)
-    }).catch((err) => {
-      console.error("Failed to copy link to clipboard:", err);
-    });
-  };
+  // const handleShareCategory = (categoryNewsId: string) => {
+  //   const website = window.location.origin; // Gets the base URL dynamically
+  //   const link = `${website}/category/${categoryNewsId}`;    
+  //   navigator.clipboard.writeText(link).then(() => {
+  //   console.log("Link copied to clipboard:", link);
+  //   setAlert(true)
+  //   setTimeout(() => setAlert(false), 1500)
+  //   }).catch((err) => {
+  //     console.error("Failed to copy link to clipboard:", err);
+  //   });
+  // };
 
   const onDelete = (index: string) => {
     deleteDataWithCategoryNewsId(index)
@@ -182,7 +184,7 @@ const Category = () => {
                           <Edit className="h-4 w-4 mr-2" />
                           Edit
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator />
+                        {/* <DropdownMenuSeparator />
                         <DropdownMenuItem
                           className="cursor-pointer"
                           onClick={() => {
@@ -192,7 +194,7 @@ const Category = () => {
                         
                           <Edit className="h-4 w-4 mr-2" />
                           Share
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> */}
                         
                         <DropdownMenuSeparator />
                         <DropdownMenuItem

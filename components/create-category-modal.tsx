@@ -1,4 +1,5 @@
 "use client"
+import { Timestamp } from 'firebase/firestore'
 
 import type React from 'react'
 import { useState } from 'react'
@@ -36,6 +37,7 @@ interface CreateCategoryModalProps {
         source: string[]
         includeKeyword: string[]
         excludeKeyword: string[]
+        createdAt?: Timestamp
     }) => void
 }
 
@@ -72,7 +74,8 @@ export default function CreateCategoryModal({isOpen, onClose, onCreateCategory} 
             categoryNewsId: categoryNewsId,
             source: selectedSources,
             includeKeyword: includeKeywords,
-            excludeKeyword: excludeKeywords
+            excludeKeyword: excludeKeywords,
+            Timestamp: Timestamp.now()
         }
         onCreateCategory(category)
         addData(category)
