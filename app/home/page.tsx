@@ -2,8 +2,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Facebook, Github, Instagram, Twitter } from "lucide-react"
-
+import { Facebook, Github, Instagram, Twitter, Brain, Pencil, Clock} from "lucide-react"
 
  export default function page() {
   return (
@@ -36,15 +35,12 @@ import { Facebook, Github, Instagram, Twitter } from "lucide-react"
             <Card className="bg-[#1a2942] text-white">
               <CardContent className="p-6">
                 <h3 className="text-xl font-bold mb-4">
-                  Save Time with
-                  <br />
-                  Bite-Sized News.
+                  
+                  Bite-Sized News
                 </h3>
-                <div className="mb-4">
-                  <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center mb-2">
-                    <span className="text-white">AI</span>
-                  </div>
-                  <p className="font-medium">AI summarization</p>
+                <div className="mb-4 flex items-center gap-2">
+                  <Brain className="w-6 h-6 text-white" />
+                  <span className="font-medium">AI Summarization</span>
                 </div>
                 <p className="text-white/80">Stay informed in minutes without the need to read lengthy articles.</p>
               </CardContent>
@@ -54,18 +50,15 @@ import { Facebook, Github, Instagram, Twitter } from "lucide-react"
               <CardContent className="p-6">
                 <h3 className="text-xl font-bold mb-4">
                   Your News,
-                  <br />
                   Your Way.
                 </h3>
-                <div className="mb-4">
-                  <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center mb-2">
-                    <span className="text-white">C</span>
-                  </div>
-                  <p className="font-medium">Customized Category</p>
+                <div className="mb-4 flex items-center gap-2">
+                  <Pencil className="w-6 h-6 text-white" />
+                  <span className="font-medium">Personalized Newsfeed</span>
                 </div>
                 <p className="text-white/80">
-                  Personalize your news feed with categories that matter most to you - technology, sports, business,
-                  entertainment, and more. Tailored to your interests for a truly unique experience.
+                  Personalize your news feed with categories that matter most to you - source of the information, 
+                  keywords you want to include, and keywords you want to exclude. Tailored to your interests for a truly unique experience.
                 </p>
               </CardContent>
             </Card>
@@ -73,15 +66,13 @@ import { Facebook, Github, Instagram, Twitter } from "lucide-react"
             <Card className="bg-[#1a2942] text-white">
               <CardContent className="p-6">
                 <h3 className="text-xl font-bold mb-4">
-                  Be Part
-                  <br />
-                  of the Conversation.
+                Read-o-Meter  
                 </h3>
                 <div className="mb-4">
-                  <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center mb-2">
-                    <span className="text-white">E</span>
-                  </div>
-                  <p className="font-medium">Engagement System</p>
+                <div className="mb-4 flex items-center gap-2">
+                  <Clock className="w-6 h-6 text-white" />
+                  <span className="font-medium">Read Time Estimator</span>
+                </div>
                 </div>
                 <p className="text-white/80">
                   Engage with the news like never before! Like, comment, and share stories that resonate with you. Join
@@ -100,7 +91,7 @@ import { Facebook, Github, Instagram, Twitter } from "lucide-react"
           <div className="grid gap-8 max-w-4xl mx-auto">
             <Card className="ml-0 md:ml-12">
               <CardContent className="p-6">
-                <h3 className="text-xl font-bold mb-2">Step 1. Sign Up and Customize Preference</h3>
+                <h3 className="text-xl font-bold mb-2">Step 1: Sign Up and Customize Preference</h3>
                 <p className="text-gray-600">
                   Create an account to get started and create categories based on personal interest
                 </p>
@@ -109,15 +100,15 @@ import { Facebook, Github, Instagram, Twitter } from "lucide-react"
 
             <Card className="mr-0 md:mr-12 md:ml-auto">
               <CardContent className="p-6">
-                <h3 className="text-xl font-bold mb-2">Step 2. Get News Summaries</h3>
-                <p className="text-gray-600">Articles are summarized into either bullet points or short passages</p>
+                <h3 className="text-xl font-bold mb-2">Step 2: Get News Summaries</h3>
+                <p className="text-gray-600">Articles are summarized through the power of OpenAi technology</p>
               </CardContent>
             </Card>
 
             <Card className="ml-0 md:ml-12">
               <CardContent className="p-6">
-                <h3 className="text-xl font-bold mb-2">Step 3. Engage and Share</h3>
-                <p className="text-gray-600">Like, comment, and share to join the conversation.</p>
+                <h3 className="text-xl font-bold mb-2">Step 3: Like and Read</h3>
+                <p className="text-gray-600">Like, select an article, and enjoy</p>
               </CardContent>
             </Card>
           </div>

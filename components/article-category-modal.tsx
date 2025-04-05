@@ -368,8 +368,8 @@ export default function ArticleCategoryModal({ article, isOpen, onClose, collect
                   </svg>
                   </div>
                 ) :  article.summary ? (
-                  <p>{article.summary}</p>
-                ): response ? (
+                  article.summary.split('\n').map((point, index) => (
+                    <p key={index}>{point}</p>))                ): response ? (
                   response.split('\n').map((point, index) => (
                   <p key={index}>{point}</p>
                   ))

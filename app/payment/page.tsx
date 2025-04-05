@@ -53,50 +53,7 @@ export default function PremiumPage() {
             </div>
       
             <div className="flex flex-col md:flex-row gap-8 justify-center">
-              {/* Premium Plan */}
-              <Card
-                className={`w-full max-w-md border-2 transition-all ${
-                  selectedPlan === "premium" ? "border-blue-600 shadow-lg" : "border-gray-200"
-                }`}
-              >
-                <CardHeader className="text-center pb-4">
-                  <CardTitle className="text-2xl font-bold">PREMIUM</CardTitle>
-                  {selectedPlan === "premium" && <Badge className="bg-blue-600 absolute top-4 right-4">Selected</Badge>}
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="space-y-4 mb-6">
-                    {features.map((feature, index) => (
-                      <div key={index} className="flex items-center">
-                        <Check className={`h-5 w-5 mr-3 ${feature.premium ? "text-blue-600" : "text-gray-300"}`} />
-                        <span className="flex-1">
-                          {feature.name}
-                          {feature.name === "Portfolio Posting" && (
-                            <span className="text-blue-600 font-medium"> (Unlimited)</span>
-                          )}
-                          {feature.name === "Article Posting" && (
-                            <span className="text-blue-600 font-medium"> (Unlimited)</span>
-                          )}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-      
-                  <div className="text-center my-6">
-                    <div className="text-3xl font-bold">
-                      $14.90<span className="text-lg font-normal text-gray-500">/Month</span>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-center pb-8">
-                  <Button
-                    className="bg-blue-950 hover:bg-blue-900 text-white px-8 py-6 h-auto text-lg font-medium rounded-full"
-                    onClick={() => handleSelectPlan("premium")}
-                  >
-                    Get Premium
-                  </Button>
-                </CardFooter>
-              </Card>
-      
+             
               {/* Freemium Plan */}
               <Card
                 className={`w-full max-w-md border-2 transition-all ${
@@ -136,6 +93,50 @@ export default function PremiumPage() {
                     onClick={() => handleSelectPlan("freemium")}
                   >
                     Continue with Free
+                  </Button>
+                </CardFooter>
+              </Card>
+
+               {/* Premium Plan */}
+               <Card
+                className={`w-full max-w-md border-2 transition-all ${
+                  selectedPlan === "premium" ? "border-blue-600 shadow-lg" : "border-gray-200"
+                }`}
+              >
+                <CardHeader className="text-center pb-4">
+                  <CardTitle className="text-2xl font-bold">PREMIUM</CardTitle>
+                  {selectedPlan === "premium" && <Badge className="bg-blue-600 absolute top-4 right-4">Selected</Badge>}
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="space-y-4 mb-6">
+                    {features.map((feature, index) => (
+                      <div key={index} className="flex items-center">
+                        <Check className={`h-5 w-5 mr-3 ${feature.premium ? "text-blue-600" : "text-gray-300"}`} />
+                        <span className="flex-1">
+                          {feature.name}
+                          {feature.name === "Portfolio Posting" && (
+                            <span className="text-blue-600 font-medium"> (Unlimited)</span>
+                          )}
+                          {feature.name === "Article Posting" && (
+                            <span className="text-blue-600 font-medium"> (Unlimited)</span>
+                          )}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+      
+                  <div className="text-center my-6">
+                    <div className="text-3xl font-bold">
+                      $14.90<span className="text-lg font-normal text-gray-500">/Month</span>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-center pb-8">
+                  <Button
+                    className="bg-blue-950 hover:bg-blue-900 text-white px-8 py-6 h-auto text-lg font-medium rounded-full"
+                    onClick={() => handleSelectPlan("premium")}
+                  >
+                    Get Premium
                   </Button>
                 </CardFooter>
               </Card>

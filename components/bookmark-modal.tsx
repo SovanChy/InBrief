@@ -348,8 +348,8 @@ export default function BookmarkModal({ article, isOpen, onClose, collectionName
                   </svg>
                   </div>
                 ) :  article.summary ? (
-                  <p>{article.summary}</p>
-                ): response ? (
+                  article.summary.split('\n').map((point, index) => (
+                    <p key={index}>{point}</p>))                ): response ? (
                   response.split('\n').map((point, index) => (
                   <p key={index}>{point}</p>
                   ))

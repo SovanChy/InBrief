@@ -418,7 +418,8 @@ export default function ArticleModal({ article, isOpen, onClose, collectionName,
                   </svg>
                   </div>
                 ) :  article.summary ? (
-                  <p>{article.summary}</p>
+                  article.summary.split('\n').map((point, index) => (
+                  <p key={index}>{point}</p>))
                 ): response ? (
                   response.split('\n').map((point, index) => (
                   <p key={index}>{point}</p>
