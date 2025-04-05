@@ -36,6 +36,8 @@ export default async function Page({ params }: { params: { id: string } }) {
   let data: any = null;
   let loading = true;
   let error = null;
+  let collectedCategoryName = null
+
 
 //   const storedNewsSnapshot = await db
 //     .collection("categoryNews")
@@ -76,6 +78,8 @@ export default async function Page({ params }: { params: { id: string } }) {
 
         const sourcesParam =
           pref.source.length > 0 ? `&sources=${pref.source.join(",")}` : "";
+          let categoryName = pref.name; 
+
 
         const URL = `https://newsapi.org/v2/everything?language=en${queryString}${sourcesParam}&pageSize=10&apiKey=${API_KEY}`;
 
@@ -86,6 +90,8 @@ export default async function Page({ params }: { params: { id: string } }) {
           if (result.status === "ok" && result.articles.length > 0) {
             data = result;
             loading = false;
+            collectedCategoryName = categoryName;
+
           } else {
             error = "No articles found with the current keywords or sources.";
             loading = false;
@@ -110,6 +116,8 @@ export default async function Page({ params }: { params: { id: string } }) {
           collectionName="categoryNews"
           categoryNewsId={categoryNewsId}
           redirectTo={`/category/${categoryNewsId}`}
+          categoryName={collectedCategoryName || ""}
+
         />
       )}
     </div>

@@ -2,17 +2,14 @@
 import React from 'react'
 import SidebarComponent from '@/components/sidebar'
 import { useState } from 'react'
-import {
+import { 
   SignedIn,
   SignedOut,
-  SignInButton,
-  SignUpButton,
-  UserButton,
+  useUser,
 } from "@clerk/nextjs";
+
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
-import { Check } from "lucide-react"
+import { loadStripe } from '@stripe/stripe-js';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
@@ -24,6 +21,8 @@ interface PlanFeature {
 
 export default function PremiumPage() {
   const [selectedPlan, setSelectedPlan] = useState<"premium" | "freemium" | null>(null)
+  const { isSignedIn, user } = useUser()
+
 
   const Free_features: PlanFeature[] = [
     { name: "Create up to 3 categories", premium: false, freemium: true },
@@ -40,6 +39,30 @@ export default function PremiumPage() {
     { name: "", premium: true, freemium: true },
     { name: "", premium: true, freemium: false },
   ]
+
+
+  const handleGetPremium = async () => {
+    if (!isSignedIn) {
+      // Handle sign-in redirect
+      return
+    }
+
+    try {
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: user?.id }),
+      })
+
+      const { id } = await response.json()
+      const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!)
+      await stripe?.redirectToCheckout({ sessionId: id })
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  }
 
   const handleSelectPlan = (plan: "premium" | "freemium") => {
     setSelectedPlan(plan)
@@ -138,12 +161,12 @@ export default function PremiumPage() {
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-center pb-8">
-                  <Button
-                    className="bg-blue-950 hover:bg-blue-900 text-white px-8 py-6 h-auto text-lg font-medium rounded-full"
-                    onClick={() => handleSelectPlan("premium")}
-                  >
-                    Get Premium
-                  </Button>
+                <Button
+            className="bg-blue-950 hover:bg-blue-900 text-white px-8 py-6 h-auto text-lg font-medium rounded-full"
+        onClick={handleGetPremium}
+            >
+            Get Premium
+             </Button>
                 </CardFooter>
               </Card>
             </div>
