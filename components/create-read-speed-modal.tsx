@@ -26,7 +26,7 @@ export default function CreateReadSpeedModal({isOpen, onClose} : CreateReadSpeed
     const { userId } = useAuth() || { userId: '' }
     const userIdString = userId || ''
     //Default reading speed is 250 words per minute
-    const [readingSpeed, setReadingSpeed] = useState<number>(250)
+    const [readingSpeed, setReadingSpeed] = useState<number>()
    
     const {addReadSpeedData} = AddFireStoreData('userReading')
 
@@ -43,7 +43,7 @@ export default function CreateReadSpeedModal({isOpen, onClose} : CreateReadSpeed
                 position: 'top-center',
                 duration: 2000
             })
-            resetForm()
+            // resetForm()
             onClose()
         } catch (error) {
             toast.error('Failed to save reading speed', {
@@ -52,9 +52,9 @@ export default function CreateReadSpeedModal({isOpen, onClose} : CreateReadSpeed
         }
     }
 
-    const resetForm = () => {
-        setReadingSpeed(250)
-    }
+    // const resetForm = () => {
+    //     setReadingSpeed(250)
+    // }
 
 
     if(!isOpen) return null 

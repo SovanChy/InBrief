@@ -1,12 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import {
-  Clock,
-  RefreshCw,
-  Search,
-  Share2,
-  ThumbsUp,
-} from "lucide-react";
+import { Clock, RefreshCw, Search, Share2, ThumbsUp } from "lucide-react";
 import {
   SignedIn,
   SignedOut,
@@ -33,9 +27,8 @@ interface Article {
   timePosted: string;
   summary: string;
   like: number;
-  readStatus: boolean; 
+  readStatus: boolean;
   likesBy: string[] | null;
-
 }
 
 interface NewsFeedProps {
@@ -43,13 +36,14 @@ interface NewsFeedProps {
   description?: string;
 }
 
-interface idProps{
-  id: string; 
+interface idProps {
+  id: string;
 }
 
-
-
-export default function BookmarkFeed({ articles, id }: NewsFeedProps & idProps) {
+export default function BookmarkFeed({
+  articles,
+  id,
+}: NewsFeedProps & idProps) {
   const router = useRouter();
 
   // Article Modal
@@ -59,6 +53,18 @@ export default function BookmarkFeed({ articles, id }: NewsFeedProps & idProps) 
   const [isReadSpeedModalOpen, setIsReadSpeedModalOpen] = useState(false);
 
   const [categories, setCategories] = useState<any[]>([]);
+
+  //search query
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Filter displayed articles (keep original implementation)
+  const filteredArticles = articles.filter((article) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      article.title.toLowerCase().includes(query) ||
+      (article.content?.toLowerCase()?.includes(query) ?? false)
+    );
+  });
 
   //handle article click
   const handleArticleClick = (article: any) => {
@@ -72,8 +78,6 @@ export default function BookmarkFeed({ articles, id }: NewsFeedProps & idProps) 
     console.log("Created category:", category);
   };
 
- 
-
   useEffect(() => {
     const handleArticleClickEvent = (e: any) => {
       handleArticleClick(e.detail);
@@ -86,8 +90,9 @@ export default function BookmarkFeed({ articles, id }: NewsFeedProps & idProps) 
     };
   }, []);
   return (
-  <div className="flex w-full h-screen">
-        <SidebarComponent activeTab="bookmarks" setActiveTab={() => {}} />           {/* Main Content - Scrollable area */}
+    <div className="flex w-full h-screen">
+      <SidebarComponent activeTab="bookmarks" setActiveTab={() => {}} />{" "}
+      {/* Main Content - Scrollable area */}
       <div className="flex-1 flex flex-col overflow-hidden ml-24 p-4">
         {/* Header */}
         <header className="flex items-center justify-between p-4 border-b dark:border-gray-700 bg-white dark:bg-gray-800">
@@ -99,22 +104,29 @@ export default function BookmarkFeed({ articles, id }: NewsFeedProps & idProps) 
             Create Category
           </Button>
 
+          {/* Update search input JSX */}
           <div className="relative w-full max-w-md mx-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-            <Input
-              type="text"
-              placeholder="Search"
-              className="pl-10 bg-gray-100 dark:bg-gray-700 border-none"
-            />
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+              <Input
+                type="text"
+                placeholder="Search"
+                className="pl-10 bg-gray-100 dark:bg-gray-700 border-none"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
 
           <div className="flex items-center space-x-4">
-          <Button variant="default"  className="bg-blue-950 hover:bg-blue-900" 
-            onClick={() => setIsReadSpeedModalOpen(true)}>
+            <Button
+              variant="default"
+              className="bg-blue-950 hover:bg-blue-900"
+              onClick={() => setIsReadSpeedModalOpen(true)}
+            >
               Add Reading Speed
             </Button>
-           
-            
+
             <SignedOut>
               <SignInButton>
                 <Button className="bg-transparent border border-white-500 text-white hover:bg-white/50">
@@ -144,34 +156,62 @@ export default function BookmarkFeed({ articles, id }: NewsFeedProps & idProps) 
             </div>
           </div>
 
-          {/* Trending Section */}
-          <section className="mb-8">
 
-            <div className="space-y-6">
-            {articles && articles.length > 0 ? (
-                articles.map((article, index) => (
-                    <ArticleCard
-            key={index}
+{/* 
+          {filteredArticles.map((article, index) => {
+    const originalIndex = articles.findIndex(a => a.url === article.url);
+    return (
+      <ArticleCard
+        key={originalIndex}
         id={id}
-        arrayIndex={index}
+        arrayIndex={originalIndex}  // Pass original index
         summary={article.summary}
-        image={article.image || "/placeholder.svg"}
+        image={article.urlToImage || "/placeholder.svg"}
         title={article.title}
-        timePosted={new Date(article.timePosted).toLocaleString()}
+        timePosted={new Date(article.publishedAt).toLocaleString()}
         readTime="Click to get read time"
-        source={article.source}
-        preview={article.content || "Click to read more..."}
+        source={article.url}
+        preview={article.description || "Click to read more..."}
         like={article.like}
         readStatus={article.readStatus}
-        openAiCollectionName="bookmarks"
+        openAiCollectionName="news"
         likesBy={Array.isArray(article.likesBy) ? article.likesBy : null}
       />
-    ))
-  ) : (
-    <div className="text-center py-10">
-      <p>No bookmarked articles found.</p>
-    </div>
-  )}
+    );
+  })} */}
+
+          {/* Trending Section */}
+          <section className="mb-8">
+            <div className="space-y-6">
+              {articles && articles.length > 0 ? (
+                filteredArticles.map((article, index) => {
+                  const originalIndex = articles.findIndex(a => a.source === article.source);
+                  return(
+                  <ArticleCard
+                    key={index}
+                    id={id}
+                    arrayIndex={index}
+                    summary={article.summary}
+                    image={article.image || "/placeholder.svg"}
+                    title={article.title}
+                    timePosted={new Date(article.timePosted).toLocaleString()}
+                    readTime="Click to get read time"
+                    source={article.source}
+                    preview={article.content || "Click to read more..."}
+                    like={article.like}
+                    readStatus={article.readStatus}
+                    openAiCollectionName="bookmarks"
+                    likesBy={
+                      Array.isArray(article.likesBy) ? article.likesBy : null
+                    }
+                  />
+                  );
+                })
+              ) : (
+                <div className="text-center py-10">
+                  <p>No bookmarked articles found.</p>
+                </div>
+              )}
             </div>
           </section>
         </main>
@@ -182,19 +222,16 @@ export default function BookmarkFeed({ articles, id }: NewsFeedProps & idProps) 
         onClose={() => setIsArticleModalOpen(false)}
         collectionName="bookmarks"
         categoryNewsId={null}
-
       />
       <CreateCategoryModal
         isOpen={isCategoryModalOpen}
         onClose={() => setIsCategoryModalOpen(false)}
         onCreateCategory={handleCreateCategory}
       />{" "}
-
-
-            <CreateReadSpeedModal
-                  isOpen={isReadSpeedModalOpen}
-                  onClose={() => setIsReadSpeedModalOpen(false)}
-                />{" "}
+      <CreateReadSpeedModal
+        isOpen={isReadSpeedModalOpen}
+        onClose={() => setIsReadSpeedModalOpen(false)}
+      />{" "}
     </div>
   );
 }
@@ -213,11 +250,24 @@ interface ArticleCardProps {
   readStatus: boolean;
   openAiCollectionName: string;
   likesBy: string[] | null;
-  
 }
 
-function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, source, preview, like, id, openAiCollectionName, readStatus,likesBy}: ArticleCardProps & idProps) {
-  const {userId} = useAuth()
+function ArticleCard({
+  arrayIndex,
+  summary,
+  image,
+  title,
+  timePosted,
+  readTime,
+  source,
+  preview,
+  like,
+  id,
+  openAiCollectionName,
+  readStatus,
+  likesBy,
+}: ArticleCardProps & idProps) {
+  const { userId } = useAuth();
   const handleClick = () => {
     // Get the parent component's handleArticleClick function
     const article = {
@@ -233,7 +283,7 @@ function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, s
       preview,
       content: preview,
       like,
-      readStatus, 
+      readStatus,
       openAiCollectionName,
       likesBy,
     };
@@ -260,7 +310,6 @@ function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, s
         <div className="flex justify-between items-start">
           <h4 className="text-lg font-bold mb-1 pr-2">{title}</h4>
           <div className="flex items-center gap-1 flex-shrink-0">
-            
             <Button
               variant="ghost"
               size="icon"
@@ -303,21 +352,20 @@ function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, s
         </p>
 
         <div className="flex items-center gap-4">
-        <div className="flex items-center gap-1">
-          {userId && likesBy?.includes(userId) ? (
-            <Button variant="ghost" size="sm" className="gap-2">
-            <ThumbsUp className="h-4 w-4 fill-blue-500 stroke-blue-500" />             
-             {like}
-            </Button>
+          <div className="flex items-center gap-1">
+            {userId && likesBy?.includes(userId) ? (
+              <Button variant="ghost" size="sm" className="gap-2">
+                <ThumbsUp className="h-4 w-4 fill-blue-500 stroke-blue-500" />
+                {like}
+              </Button>
             ) : (
               <Button variant="ghost" size="sm" className="gap-2">
-              <ThumbsUp className="h-4 w-4" />
-              {like}
+                <ThumbsUp className="h-4 w-4" />
+                {like}
               </Button>
             )}
           </div>
-        
-         
+
           <Button variant="ghost" size="sm" className="h-8 px-2">
             <Share2 className="h-4 w-4 mr-1" />
             Share

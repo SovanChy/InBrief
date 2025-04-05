@@ -39,6 +39,7 @@ export default function Page() {
             uid: userCredentials.user.uid,
             email: Email,
             name: Username,
+            role: "free-tier",
             createdAt: serverTimestamp(),
           });
           console.log("User document created in Firestore");
@@ -106,7 +107,7 @@ export default function Page() {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-600">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-500 to-blue-900">
       <div className="text-center">
         <h1 className="text-4xl font-extrabold text-white mb-4 animate-pulse">
           Redirecting...

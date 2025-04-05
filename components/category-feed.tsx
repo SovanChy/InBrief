@@ -59,6 +59,20 @@ export default function CategoryFeed({ articles, id , categoryName}: NewsFeedPro
   const params = useParams(); 
   const categoryId = params.id;
 
+   //search query 
+   const [searchQuery, setSearchQuery] = useState('');
+ 
+
+   // Filter displayed articles (keep original implementation)
+   const filteredArticles = articles.filter(article => {
+    const query = searchQuery.toLowerCase();
+    return (
+      article.title.toLowerCase().includes(query) ||
+      (article.description?.toLowerCase()?.includes(query) ?? false)
+    );
+  });
+
+
   
 
   // Article Modal
@@ -110,14 +124,21 @@ export default function CategoryFeed({ articles, id , categoryName}: NewsFeedPro
                 Create Category
             </Button>
 
-            <div className="relative w-full max-w-md mx-4">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-                <Input
-                    type="text"
-                    placeholder="Search"
-                    className="pl-10 bg-gray-100 dark:bg-gray-700 border-none"
-                />
-            </div>
+                       {/* Update search input JSX */}
+  <div className="relative w-full max-w-md mx-4">
+   
+   <div className="relative">
+     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+     <Input
+       type="text"
+       placeholder="Search"
+       className="pl-10 bg-gray-100 dark:bg-gray-700 border-none"
+       value={searchQuery}
+       onChange={(e) => setSearchQuery(e.target.value)}
+     />
+   </div>
+ 
+</div>
 
             <div className="flex items-center space-x-4">
             <Button variant="default"  className="bg-blue-950 hover:bg-blue-900" 
@@ -159,25 +180,27 @@ export default function CategoryFeed({ articles, id , categoryName}: NewsFeedPro
             <section className="mb-8">
 
                 <div className="space-y-6">
-                    {articles.map((article, index) => (
-                        <ArticleCard
-                        key={index}
-                        id={id}
-                        arrayIndex={index}
-                        summary={article.summary}
-                        image={article.urlToImage || "/placeholder.svg"}
-                        title={article.title}
-                        timePosted={new Date(article.publishedAt).toLocaleString()}
-                        readTime="Click to get read time"
-                        source={article.url}
-                        preview={article.description || "Click to read more..."}
-                        like={article.like}
-                        readStatus={article.readStatus}
-                        openAiCollectionName="categoryNews"
-                        likesBy = {Array.isArray(article.likesBy) ? article.likesBy : null}
-
-                      />
-                    ))}
+                {filteredArticles.map((article, index) => {
+    const originalIndex = articles.findIndex(a => a.url === article.url);
+    return (
+      <ArticleCard
+        key={originalIndex}
+        id={id}
+        arrayIndex={originalIndex}  // Pass original index
+        summary={article.summary}
+        image={article.urlToImage || "/placeholder.svg"}
+        title={article.title}
+        timePosted={new Date(article.publishedAt).toLocaleString()}
+        readTime="Click to get read time"
+        source={article.url}
+        preview={article.description || "Click to read more..."}
+        like={article.like}
+        readStatus={article.readStatus}
+        openAiCollectionName="news"
+        likesBy={Array.isArray(article.likesBy) ? article.likesBy : null}
+      />
+    );
+  })}
                 </div>
             </section>
         </main>

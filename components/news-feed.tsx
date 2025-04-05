@@ -16,7 +16,6 @@ import {
 } from "@clerk/nextjs";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Badge } from "./ui/badge";
 import Image from "next/image";
 import ArticleModal from "./article-modal";
 import CreateCategoryModal from "./create-category-modal";
@@ -24,6 +23,8 @@ import CreateReadSpeedModal from "./create-read-speed-modal";
 import SidebarComponent from "./sidebar";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
+
+
 
 interface Article {
   title: string;
@@ -57,15 +58,30 @@ export default function NewsFeed({ articles, id }: NewsFeedProps & idProps) {
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isReadSpeedModalOpen, setIsReadSpeedModalOpen] = useState(false);
-
   const [categories, setCategories] = useState<any[]>([]);
 
+  //search query 
+  const [searchQuery, setSearchQuery] = useState('');
+ 
 
-  //handle article click
-  const handleArticleClick = (article: any) => {
-    setSelectedArticle(article);
-    setIsArticleModalOpen(true);
-  };
+   // Filter displayed articles (keep original implementation)
+   const filteredArticles = articles.filter(article => {
+    const query = searchQuery.toLowerCase();
+    return (
+      article.title.toLowerCase().includes(query) ||
+      (article.description?.toLowerCase()?.includes(query) ?? false)
+    );
+  });
+
+
+
+
+    // Modified handleArticleClick to accept direct article object
+    const handleArticleClick = (article: Article) => {
+      setSelectedArticle(article);
+      setIsArticleModalOpen(true);
+    };
+  
 
   
   const handleCreateCategory = (category: any) => {
@@ -104,14 +120,21 @@ export default function NewsFeed({ articles, id }: NewsFeedProps & idProps) {
             Create Category
           </Button>
 
-          <div className="relative w-full max-w-md mx-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-            <Input
-              type="text"
-              placeholder="Search"
-              className="pl-10 bg-gray-100 dark:bg-gray-700 border-none"
-            />
-          </div>
+           {/* Update search input JSX */}
+  <div className="relative w-full max-w-md mx-4">
+   
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+          <Input
+            type="text"
+            placeholder="Search"
+            className="pl-10 bg-gray-100 dark:bg-gray-700 border-none"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+      
+  </div>
 
           <div className="flex items-center space-x-4">
 
@@ -159,25 +182,27 @@ export default function NewsFeed({ articles, id }: NewsFeedProps & idProps) {
             <h3 className="text-xl text-gray-500 mb-4">Latest</h3>
 
             <div className="space-y-6">
-              {articles.map((article, index) => (
-                <ArticleCard
-                  key={index}
-                  id={id}
-                  arrayIndex={index}
-                  summary={article.summary}
-                  image={article.urlToImage || "/placeholder.svg"}
-                  title={article.title}
-                  timePosted={new Date(article.publishedAt).toLocaleString()}
-                  readTime="Click to get read time"
-                  source={article.url}
-                  preview={article.description || "Click to read more..."}
-                  like={article.like}
-                  readStatus={article.readStatus}
-                  openAiCollectionName="news"
-                  likesBy = {Array.isArray(article.likesBy) ? article.likesBy : null}
-
-                />
-              ))}
+            {filteredArticles.map((article, index) => {
+    const originalIndex = articles.findIndex(a => a.url === article.url);
+    return (
+      <ArticleCard
+        key={originalIndex}
+        id={id}
+        arrayIndex={originalIndex}  // Pass original index
+        summary={article.summary}
+        image={article.urlToImage || "/placeholder.svg"}
+        title={article.title}
+        timePosted={new Date(article.publishedAt).toLocaleString()}
+        readTime="Click to get read time"
+        source={article.url}
+        preview={article.description || "Click to read more..."}
+        like={article.like}
+        readStatus={article.readStatus}
+        openAiCollectionName="news"
+        likesBy={Array.isArray(article.likesBy) ? article.likesBy : null}
+      />
+    );
+  })}
             </div>
           </section>
         </main>

@@ -24,6 +24,7 @@ import { cn } from '@/lib/utils'
 import { AddFireStoreData } from '@/app/firebase/(hooks)/addFireStoreData'
 import { useAuth } from '@clerk/nextjs'
 import { v4 as uuidv4 } from 'uuid';
+import Image from 'next/image'
 
 
 
@@ -134,6 +135,15 @@ export default function CreateCategoryModal({isOpen, onClose, onCreateCategory} 
 
                 <div className="p-8">
                     <h2 className="text-3xl font-bold text-center mb-2">Category Name</h2>
+                     <div className="flex justify-center my-4">
+                                            <Image
+                                                src="/images/categories.png"
+                                                alt="Book Icon"
+                                                width={50}
+                                                height={50}
+                                                className="mx-auto mt-2"
+                                            />
+                                        </div>
                     <p className="text-center text-gray-300 mb-8">
                         Customize your news feed by creating a category based on your interests.
                     </p>

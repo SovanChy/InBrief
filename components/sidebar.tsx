@@ -15,9 +15,11 @@ export default function SidebarComponent({ activeTab, setActiveTab }: SidebarCom
       {/* Sidebar - Fixed position */}
       <div className="w-24 bg-blue-950 text-white flex-shrink-0 h-screen fixed top-0 left-0">        
         <div className="flex justify-center pt-6 pb-8">
+          <Link href="/home">
           <h1 className="text-xl font-bold">
             In<span className="text-blue-400">Brief</span>
           </h1>
+          </Link>
         </div>
 
         {/* Navigation Icons */}
