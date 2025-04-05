@@ -20,6 +20,20 @@ export const AddFireStoreData = (collectionName: string) => {
             console.log(err)
         }
     }
+
+
+    const addReadSpeedData = async (document: any, id:string) => {
+      try{
+          const createdAt = serverTimestamp()
+          const docRef = await setDoc(doc(firestoreDb, collectionName, id), {
+              createdAt: createdAt,
+              ...document,
+          });
+      }catch(err){
+          console.log(err)
+      }
+  }
+
     const addDataBookMark = async (document: any, id: string) => {
       try {
       const createdAt = serverTimestamp();
@@ -160,7 +174,7 @@ const deleteDataWithCategoryNewsId = async (categoryNewsId: string) => {
 
 
 
-    return {addData, deleteData, deleteDataWithCategoryNewsId, updateData, addDataBookMark, deleteDataBookMark}
+    return {addData, addReadSpeedData, deleteData, deleteDataWithCategoryNewsId, updateData, addDataBookMark, deleteDataBookMark}
 
 
     

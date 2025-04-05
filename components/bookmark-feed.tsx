@@ -152,7 +152,7 @@ export default function BookmarkFeed({ articles, id }: NewsFeedProps & idProps) 
         image={article.image || "/placeholder.svg"}
         title={article.title}
         timePosted={new Date(article.timePosted).toLocaleString()}
-        readTime="5 min"
+        readTime="Click to get read time"
         source={article.source}
         preview={article.content || "Click to read more..."}
         like={article.like}

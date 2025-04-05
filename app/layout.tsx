@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { Toaster } from 'sonner';
+
 
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
@@ -29,6 +31,7 @@ export default function RootLayout({
       <html lang="en">
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           {children}
+          <Toaster position="top-center" richColors /> {/* Global toast container */}
         </body>
       </html>
      </ClerkProvider>

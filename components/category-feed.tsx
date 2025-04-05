@@ -162,7 +162,7 @@ export default function CategoryFeed({ articles, id }: NewsFeedProps & idProps) 
                         image={article.urlToImage || "/placeholder.svg"}
                         title={article.title}
                         timePosted={new Date(article.publishedAt).toLocaleString()}
-                        readTime="5 min"
+                        readTime="Click to get read time"
                         source={article.url}
                         preview={article.description || "Click to read more..."}
                         like={article.like}

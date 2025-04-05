@@ -89,6 +89,38 @@ export default function ArticleCategoryModal({ article, isOpen, onClose, collect
     }
   }, [data]);
 
+  //get scrape content
+  const [scrapedArticle, setScrapeArticle] = useState<any>(null);
+  const [errorScraped, setErrorScraped] = useState<any>(null);
+
+  useEffect(() => {
+    const getScrapedArticle = async (article: any) => {
+      if (!article?.source) return; // Skip if no article or source
+  
+      try {
+        const scrapeResponse = await fetch(
+          `/api/scrape-news?link=${encodeURIComponent(article.source)}`,
+          { method: "GET" }
+        );
+  
+        if (!scrapeResponse.ok) {
+          throw new Error(`Failed to fetch article: ${scrapeResponse.statusText}`);
+        }
+  
+        const scrapeData = await scrapeResponse.json();
+        setScrapeArticle(scrapeData.textContent); // Update state
+      } catch (error) {
+        console.error("Error scraping article:", error);
+        setErrorScraped("Error scraping article");
+
+      }
+    };
+  
+    if (article) {
+      getScrapedArticle(article); // Trigger scrape when modal opens
+    }
+  }, [article]); // Run only when `article` changes
+  
 
  
   
@@ -198,24 +230,24 @@ export default function ArticleCategoryModal({ article, isOpen, onClose, collect
 
     try {
       // Initiate both fetch requests concurrently
-      const scrapeResponse = fetch(`/api/scrape-news?link=${encodeURIComponent(article.source)}`, {
-        method: "GET",
-      });
+      // const scrapeResponse = fetch(`/api/scrape-news?link=${encodeURIComponent(article.source)}`, {
+      //   method: "GET",
+      // });
 
-      const [scrapeRes] = await Promise.all([scrapeResponse]);
+      // const [scrapeRes] = await Promise.all([scrapeResponse]);
 
-      if (!scrapeRes.ok) {
-        throw new Error(`Failed to fetch article: ${scrapeRes.statusText}`);
-      }
+      // if (!scrapeRes.ok) {
+      //   throw new Error(`Failed to fetch article: ${scrapeRes.statusText}`);
+      // }
 
-      const scrapeData = await scrapeRes.json();
-      const scrapedArticle = scrapeData.textContent;
+      // const scrapeData = await scrapeRes.json();
+      // const scrapedArticle = scrapeData.textContent;
 
       // Send the scraped content to OpenAI
       const summarizedContent = await fetch("/api/openai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: scrapedArticle || "" }),
+        body: JSON.stringify({ prompt: scrapedArticle || "Don't have content" }),
       }).then((res) => res.json());
 
 

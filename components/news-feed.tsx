@@ -20,6 +20,7 @@ import { Badge } from "./ui/badge";
 import Image from "next/image";
 import ArticleModal from "./article-modal";
 import CreateCategoryModal from "./create-category-modal";
+import CreateReadSpeedModal from "./create-read-speed-modal";
 import SidebarComponent from "./sidebar";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
@@ -55,7 +56,10 @@ export default function NewsFeed({ articles, id }: NewsFeedProps & idProps) {
   const [selectedArticle, setSelectedArticle] = useState<any>(null);
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [isReadSpeedModalOpen, setIsReadSpeedModalOpen] = useState(false);
+
   const [categories, setCategories] = useState<any[]>([]);
+
 
   //handle article click
   const handleArticleClick = (article: any) => {
@@ -63,6 +67,7 @@ export default function NewsFeed({ articles, id }: NewsFeedProps & idProps) {
     setIsArticleModalOpen(true);
   };
 
+  
   const handleCreateCategory = (category: any) => {
     setCategories([...categories, category]);
     // Here you would typically save the category to your backend
@@ -109,6 +114,12 @@ export default function NewsFeed({ articles, id }: NewsFeedProps & idProps) {
           </div>
 
           <div className="flex items-center space-x-4">
+
+          <Button variant="default"  className="bg-blue-950 hover:bg-blue-900" 
+            onClick={() => setIsReadSpeedModalOpen(true)}>
+              Add Reading Speed
+            </Button>
+
             <Button variant="ghost" size="icon" className="rounded-full" 
             onClick={() => handleRefreshClick()}>
               <RefreshCw className="h-5 w-5" />
@@ -157,7 +168,7 @@ export default function NewsFeed({ articles, id }: NewsFeedProps & idProps) {
                   image={article.urlToImage || "/placeholder.svg"}
                   title={article.title}
                   timePosted={new Date(article.publishedAt).toLocaleString()}
-                  readTime="5 min"
+                  readTime="Click to get read time"
                   source={article.url}
                   preview={article.description || "Click to read more..."}
                   like={article.like}
@@ -183,6 +194,11 @@ export default function NewsFeed({ articles, id }: NewsFeedProps & idProps) {
         isOpen={isCategoryModalOpen}
         onClose={() => setIsCategoryModalOpen(false)}
         onCreateCategory={handleCreateCategory}
+      />{" "}
+
+      <CreateReadSpeedModal
+        isOpen={isReadSpeedModalOpen}
+        onClose={() => setIsReadSpeedModalOpen(false)}
       />{" "}
     </div>
   );

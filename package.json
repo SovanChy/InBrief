@@ -29,6 +29,7 @@
     "openai": "^4.89.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "sonner": "^2.0.3",
     "svix": "^1.61.2",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
