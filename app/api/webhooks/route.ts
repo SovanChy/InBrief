@@ -81,31 +81,7 @@ export async function POST(req: Request) {
     switch (evt.type) {
       case 'user.created': {
         // Create a new user in Firebase when a user is created in Clerk
-        const { id } = evt.data
-
-        
-
-       
-        
-        // Get primary email if available
-        // const primaryEmail = email_addresses?.find(email => email.id === evt.data.primary_email_address_id)
-        // const emailAddress = primaryEmail?.email_address
-        
-        //create firebase user on fire authentication tab
-        // if (emailAddress) {
-        //   const userRecord = await auth.createUser({
-        //     uid: id, // Use Clerk's user ID as Firebase UID for sync
-        //     email: emailAddress,
-        //     displayName: username || `${first_name || ''} ${last_name || ''}`.trim() || undefined,
-        //     photoURL: image_url || undefined,
-        //   })
-        
-
-
-        //   console.log(`User created in Firebase with UID: ${id}`)
-        // } else {
-        //   console.log(`No email found for user ${id}, skipping Firebase creation`)
-        // }
+        const { id } = evt.data        
         console.log(`User ${id} created in Firebase`)
         break
       }
@@ -148,15 +124,7 @@ export async function POST(req: Request) {
       case 'session.created': {
         // Optional: Track when a user signs in via Clerk
         const { id } = evt.data
-        // if (id){
-        // const additionalClaims = {} // Define additionalClaims as an empty object or with the required claims
-        // try {
-        //   customToken = await auth.createCustomToken(id, additionalClaims)
-        //   console.log(`Session created for user: ${id}`)
-        // } catch (err) {
-        //   console.error('Error creating custom token:', err)
-        // }
-        // }
+       
         console.log(`Session created for user: ${id}`)
 
         break
@@ -185,15 +153,6 @@ export async function POST(req: Request) {
 
   
 
-// For session.created events, return the custom token
-// if (evt.type === 'session.created' && customToken) {
-//   return new Response(JSON.stringify({ customToken }), {
-//     status: 200,
-//     headers: {
-//       'Content-Type': 'application/json'
-//     }
-//   })
-// }
 
   return new Response('Webhook received', { status: 200 })
 } catch (error) {
