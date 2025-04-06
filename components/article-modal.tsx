@@ -162,13 +162,28 @@ export default function ArticleModal({
         return;
       }
 
-      await addDataBookMark(
-        {
-          ...article,
-        },
-        clerkId
-      );
+     // Prepare the bookmark document with all fields from your Firebase structure
+    const bookmarkDocument = {
+      arrayIndex: article.arrayIndex || 0, // Default to 0 if not provided
+      content: article.content || '',
+      id: article.id || '',
+      image: article.image || '',
+      like: article.like || 0,
+      likesBy: article.likesBy || null,
+      openAiCollectionName: article.openAiCollectionName || '',
+      preview: article.preview || '',
+      readStatus: article.readStatus || false,
+      readTime: article.readTime || 'Unavailable',
+      source: article.source || '',
+      sourceUrl: article.sourceUrl || '',
+      summary: article.summary || null,
+      timePosted: article.timePosted || new Date().toLocaleString(),
+      title: article.title || 'Untitled Article',
+    };
 
+    console.log("Bookmarking article:", bookmarkDocument);
+
+    await addDataBookMark(bookmarkDocument, clerkId);
       setBookmarkAlert(true);
       setTimeout(() => setBookmarkAlert(false), 1500);
 

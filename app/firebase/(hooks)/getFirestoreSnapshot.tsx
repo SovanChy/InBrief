@@ -153,7 +153,7 @@ export const getFireStoreDataBookMarkToday = (collectionName: string, uid?: stri
   
   useEffect(() => {
     const docRef = collection(firestoreDb, collectionName);
-    const q = query(docRef, orderBy("createdAt", "desc"), where("uid", "==", uid));
+    const q = query(docRef, where("uid", "==", uid));
     
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
         if (!querySnapshot.empty) {

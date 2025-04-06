@@ -16,6 +16,7 @@ import { getFireStoreDataCategory } from "@/app/firebase/(hooks)/getFirestoreSna
 import { CheckCircle } from "lucide-react";
 import { AddFireStoreData } from "@/app/firebase/(hooks)/addFireStoreData";
 import { Alert, AlertDescription } from "./ui/alert";
+import { Loader2 } from "lucide-react";
 
 interface ArticleCategoryModalProps {
   article: {
@@ -67,12 +68,28 @@ export default function ArticleCategoryModal({
         return;
       }
 
-      await addDataBookMark(
-        {
-          ...article,
-        },
-        clerkId
-      );
+      // Prepare the bookmark document with all fields from your Firebase structure
+      const bookmarkDocument = {
+        arrayIndex: article.arrayIndex || 0, // Default to 0 if not provided
+        content: article.content || '',
+        id: article.id || '',
+        image: article.image || '',
+        like: article.like || 0,
+        likesBy: article.likesBy || null,
+        openAiCollectionName: article.openAiCollectionName || '',
+        preview: article.preview || '',
+        readStatus: article.readStatus || false,
+        readTime: article.readTime || 'Unavailable',
+        source: article.source || '',
+        sourceUrl: article.sourceUrl || '',
+        summary: article.summary || null,
+        timePosted: article.timePosted || new Date().toLocaleString(),
+        title: article.title || 'Untitled Article',
+      };
+  
+      console.log("Bookmarking article:", bookmarkDocument);
+  
+      await addDataBookMark(bookmarkDocument, clerkId);
 
       setBookmarkAlert(true);
       setTimeout(() => setBookmarkAlert(false), 1500);
@@ -278,6 +295,56 @@ export default function ArticleCategoryModal({
     }
   }
 
+  //get reading speed
+  const [readingSpeed, setReadingSpeed] = useState<number>(250);
+  const [readTime, setReadTime] = useState<String>("");
+  const [isCalculating, setIsCalculating] = useState(false);
+
+  useEffect(() => {
+    const fetchReadingSpeed = async () => {
+      const docRef = doc(firestoreDb, "userReading", clerkId);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        return docSnap.data()?.readingSpeed || 250; // Fallback to 250 WPM
+      }
+      return 250;
+    };
+
+    const calculateReadTime = async () => {
+      if (!scrapedArticle || !clerkId) return;
+      setIsCalculating(true);
+      setReadTime("");
+
+      try {
+        // 1. Get fresh reading speed (avoid stale closures)
+        const currentSpeed = await fetchReadingSpeed();
+        setReadingSpeed(currentSpeed); // Update state if needed
+
+        // 2. Calculate time
+        const wordCount = scrapedArticle.trim().split(/\s+/).length;
+        const totalSeconds = Math.ceil((wordCount / currentSpeed) * 60);
+
+        // 3. Format (show only minutes if >1min, else seconds)
+        let formattedTime;
+        if (totalSeconds >= 60) {
+          const minutes = Math.floor(totalSeconds / 60);
+          formattedTime = `${minutes} min read`;
+        } else {
+          formattedTime = `${totalSeconds} sec read`;
+        }
+
+        setReadTime(formattedTime);
+      } catch (error) {
+        console.error("Error calculating read time:", error);
+        setReadTime("Unknown");
+      } finally {
+        setIsCalculating(false);
+      }
+    };
+
+    calculateReadTime();
+  }, [clerkId, scrapedArticle, readingSpeed]);
+
   if (!isOpen || !article) return null;
 
   return (
@@ -325,8 +392,11 @@ export default function ArticleCategoryModal({
             <span>Posted {article.timePosted}</span>
             <span className="mx-2">•</span>
             <Clock className="h-4 w-4 mr-1" />
-            <span>{article.readTime}</span>
-          </div>
+            {isCalculating ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <span>{readTime || "Calculating..."}</span>
+            )}{" "}          </div>
           <div className="text-sm text-gray-500 mb-4">
             <span>
               Source:{" "}

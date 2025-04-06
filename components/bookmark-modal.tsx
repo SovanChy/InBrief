@@ -20,6 +20,7 @@ import { useAuth } from "@clerk/nextjs";
 import { getFireStoreDataToday } from "@/app/firebase/(hooks)/getFirestoreSnapshot";
 import { CheckCircle } from "lucide-react";
 import { AddFireStoreData } from "@/app/firebase/(hooks)/addFireStoreData";
+import { Loader2 } from "lucide-react";
 
 interface ArticleModalProps {
   article: {
@@ -116,6 +117,11 @@ export default function BookmarkModal({
     }
   }, [article]); // Run only when `article` changes
 
+
+
+
+
+
   const handleBookmark = async (index: number, id: string) => {
     try {
       if (!article || !clerkId) {
@@ -186,6 +192,56 @@ export default function BookmarkModal({
       console.error("Error handling like operation:", error);
     }
   }
+
+   //get reading speed
+   const [readingSpeed, setReadingSpeed] = useState<number>(250);
+   const [readTime, setReadTime] = useState<String>("");
+   const [isCalculating, setIsCalculating] = useState(false);
+ 
+   useEffect(() => {
+     const fetchReadingSpeed = async () => {
+       const docRef = doc(firestoreDb, "userReading", clerkId);
+       const docSnap = await getDoc(docRef);
+       if (docSnap.exists()) {
+         return docSnap.data()?.readingSpeed || 250; // Fallback to 250 WPM
+       }
+       return 250;
+     };
+ 
+     const calculateReadTime = async () => {
+       if (!scrapedArticle || !clerkId) return;
+       setIsCalculating(true);
+       setReadTime("");
+ 
+       try {
+         // 1. Get fresh reading speed (avoid stale closures)
+         const currentSpeed = await fetchReadingSpeed();
+         setReadingSpeed(currentSpeed); // Update state if needed
+ 
+         // 2. Calculate time
+         const wordCount = scrapedArticle.trim().split(/\s+/).length;
+         const totalSeconds = Math.ceil((wordCount / currentSpeed) * 60);
+ 
+         // 3. Format (show only minutes if >1min, else seconds)
+         let formattedTime;
+         if (totalSeconds >= 60) {
+           const minutes = Math.floor(totalSeconds / 60);
+           formattedTime = `${minutes} min read`;
+         } else {
+           formattedTime = `${totalSeconds} sec read`;
+         }
+ 
+         setReadTime(formattedTime);
+       } catch (error) {
+         console.error("Error calculating read time:", error);
+         setReadTime("Unknown");
+       } finally {
+         setIsCalculating(false);
+       }
+     };
+ 
+     calculateReadTime();
+   }, [clerkId, scrapedArticle, readingSpeed]);
 
   const handleShare = (articleSource: string) => {
     const website = window.location.origin; // Gets the base URL dynamically
@@ -309,7 +365,11 @@ export default function BookmarkModal({
             <span>Posted {article.timePosted}</span>
             <span className="mx-2">•</span>
             <Clock className="h-4 w-4 mr-1" />
-            <span>{article.readTime}</span>
+            {isCalculating ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <span>{readTime || "Calculating..."}</span>
+            )}{" "}
           </div>
           <div className="text-sm text-gray-500 mb-4">
             <span>
