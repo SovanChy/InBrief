@@ -118,7 +118,6 @@ export default function ArticleCategoryModal({
 
   //get scrape content
   const [scrapedArticle, setScrapeArticle] = useState<any>(null);
-  const [errorScraped, setErrorScraped] = useState<any>(null);
 
   useEffect(() => {
     const getScrapedArticle = async (article: any) => {
@@ -140,7 +139,6 @@ export default function ArticleCategoryModal({
         setScrapeArticle(scrapeData.textContent); // Update state
       } catch (error) {
         console.error("Error scraping article:", error);
-        setErrorScraped("Error scraping article");
       }
     };
 
@@ -148,6 +146,56 @@ export default function ArticleCategoryModal({
       getScrapedArticle(article); // Trigger scrape when modal opens
     }
   }, [article]); // Run only when `article` changes
+
+    //get reading speed
+    const [readingSpeed, setReadingSpeed] = useState<number>(250);
+    const [readTime, setReadTime] = useState<String>("");
+    const [isCalculating, setIsCalculating] = useState(false);
+  
+    useEffect(() => {
+      const fetchReadingSpeed = async () => {
+        const docRef = doc(firestoreDb, "userReading", clerkId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          return docSnap.data()?.readingSpeed || 250; // Fallback to 250 WPM
+        }
+        return 250;
+      };
+  
+      const calculateReadTime = async () => {
+        if (!scrapedArticle || !clerkId) return;
+        setIsCalculating(true);
+        setReadTime("");
+  
+        try {
+          // 1. Get fresh reading speed (avoid stale closures)
+          const currentSpeed = await fetchReadingSpeed();
+          setReadingSpeed(currentSpeed); // Update state if needed
+  
+          // 2. Calculate time
+          const wordCount = scrapedArticle.trim().split(/\s+/).length;
+          const totalSeconds = Math.ceil((wordCount / currentSpeed) * 60);
+  
+          // 3. Format (show only minutes if >1min, else seconds)
+          let formattedTime;
+          if (totalSeconds >= 60) {
+            const minutes = Math.floor(totalSeconds / 60);
+            formattedTime = `${minutes} min read`;
+          } else {
+            formattedTime = `${totalSeconds} sec read`;
+          }
+  
+          setReadTime(formattedTime);
+        } catch (error) {
+          console.error("Error calculating read time:", error);
+          setReadTime("Unknown");
+        } finally {
+          setIsCalculating(false);
+        }
+      };
+  
+      calculateReadTime();
+    }, [clerkId, scrapedArticle, readingSpeed]);
 
   async function handleLike(index: number, collectionName: string) {
     try {
@@ -253,21 +301,7 @@ export default function ArticleCategoryModal({
       setLoading(true);
 
       try {
-        // Initiate both fetch requests concurrently
-        // const scrapeResponse = fetch(`/api/scrape-news?link=${encodeURIComponent(article.source)}`, {
-        //   method: "GET",
-        // });
-
-        // const [scrapeRes] = await Promise.all([scrapeResponse]);
-
-        // if (!scrapeRes.ok) {
-        //   throw new Error(`Failed to fetch article: ${scrapeRes.statusText}`);
-        // }
-
-        // const scrapeData = await scrapeRes.json();
-        // const scrapedArticle = scrapeData.textContent;
-
-        // Send the scraped content to OpenAI
+      
         const summarizedContent = await fetch("/api/openai", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -295,55 +329,6 @@ export default function ArticleCategoryModal({
     }
   }
 
-  //get reading speed
-  const [readingSpeed, setReadingSpeed] = useState<number>(250);
-  const [readTime, setReadTime] = useState<String>("");
-  const [isCalculating, setIsCalculating] = useState(false);
-
-  useEffect(() => {
-    const fetchReadingSpeed = async () => {
-      const docRef = doc(firestoreDb, "userReading", clerkId);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        return docSnap.data()?.readingSpeed || 250; // Fallback to 250 WPM
-      }
-      return 250;
-    };
-
-    const calculateReadTime = async () => {
-      if (!scrapedArticle || !clerkId) return;
-      setIsCalculating(true);
-      setReadTime("");
-
-      try {
-        // 1. Get fresh reading speed (avoid stale closures)
-        const currentSpeed = await fetchReadingSpeed();
-        setReadingSpeed(currentSpeed); // Update state if needed
-
-        // 2. Calculate time
-        const wordCount = scrapedArticle.trim().split(/\s+/).length;
-        const totalSeconds = Math.ceil((wordCount / currentSpeed) * 60);
-
-        // 3. Format (show only minutes if >1min, else seconds)
-        let formattedTime;
-        if (totalSeconds >= 60) {
-          const minutes = Math.floor(totalSeconds / 60);
-          formattedTime = `${minutes} min read`;
-        } else {
-          formattedTime = `${totalSeconds} sec read`;
-        }
-
-        setReadTime(formattedTime);
-      } catch (error) {
-        console.error("Error calculating read time:", error);
-        setReadTime("Unknown");
-      } finally {
-        setIsCalculating(false);
-      }
-    };
-
-    calculateReadTime();
-  }, [clerkId, scrapedArticle, readingSpeed]);
 
   if (!isOpen || !article) return null;
 

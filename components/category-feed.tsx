@@ -244,7 +244,7 @@ export default function CategoryFeed({
                     preview={article.description || "Click to read more..."}
                     like={article.like}
                     readStatus={article.readStatus}
-                    openAiCollectionName="news"
+                    openAiCollectionName="categoryNews"
                     likesBy={
                       Array.isArray(article.likesBy) ? article.likesBy : null
                     }

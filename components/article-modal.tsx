@@ -297,21 +297,7 @@ export default function ArticleModal({
       setLoading(true);
 
       try {
-        // // Initiate both fetch requests concurrently
-        // const scrapeResponse = fetch(`/api/scrape-news?link=${encodeURIComponent(article.source)}`, {
-        //   method: "GET",
-        // });
-
-        // const [scrapeRes] = await Promise.all([scrapeResponse]);
-
-        // if (!scrapeRes.ok) {
-        //   throw new Error(`Failed to fetch article: ${scrapeRes.statusText}`);
-        // }
-
-        // const scrapeData = await scrapeRes.json();
-        // const scrapedArticle = scrapeData.textContent;
-
-        // Send the scraped content to OpenAI
+      
         const summarizedContent = await fetch("/api/openai", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
