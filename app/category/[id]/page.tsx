@@ -14,32 +14,7 @@ export default function Page() {
     const [categoryName, setCategoryName] = useState<string | null>(null);
 
   
-    // useEffect(() => {
-    //     console.log("Raw Firestore data:", data);
-        
-    //     if (data && data.length > 0) {
-    //         let extractedArticles: any[] = [];
-
-    //         // Check if docData has the articles array
-    //     // if (data.docData.articles && Array.isArray(data.docData.articles)) {
-    //     // extractedArticles = [...extractedArticles, ...data.docData.articles];
-    //     //  }
-
-
-    //         data.forEach((doc: any) => {
-    //             if (doc.articles && Array.isArray(doc.articles)) {
-    //                 extractedArticles = [...extractedArticles, ...doc.articles];
-    //             }
-    //         });
-            
-    //         if (extractedArticles.length > 0) {
-    //             setArticles(extractedArticles);
-    //             console.log("Articles set successfully");
-    //         } else {
-    //             console.log("No articles found in the data structure");
-    //         }
-    //     }
-    // }, [data]);
+  
 
     useEffect(() => {
         console.log("Raw Firestore data:", data);
@@ -66,16 +41,6 @@ export default function Page() {
         }
       }, [data]);
 
-    // Automatically reload  if articles are not loaded
-    // useEffect(() => {
-    //     const timer = setTimeout(() => {
-    //         if (!articles) {
-    //             window.location.href = `/category/${categoryId}`;
-    //         }
-    //     }, 3000); // 5-second delay before reload
-
-    //     return () => clearTimeout(timer); // Cleanup the timer
-    // }, [articles, categoryId]);
 
     return (
         <div>

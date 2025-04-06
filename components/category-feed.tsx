@@ -1,12 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import {
-  Clock,
-  RefreshCw,
-  Search,
-  Share2,
-  ThumbsUp,
-} from "lucide-react";
+import { Clock, RefreshCw, Search, Share2, ThumbsUp } from "lucide-react";
 import {
   SignedIn,
   SignedOut,
@@ -25,11 +19,17 @@ import SidebarComponent from "./sidebar";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import Category from "@/app/category/page";
-import { useAuth } from  "@clerk/nextjs";
-import { doc, collection, getDocs, getDoc, query, onSnapshot, where } from "firebase/firestore";
+import { useAuth } from "@clerk/nextjs";
+import {
+  doc,
+  collection,
+  getDocs,
+  getDoc,
+  query,
+  onSnapshot,
+  where,
+} from "firebase/firestore";
 import { firestoreDb } from "@/app/firebase/firebase";
-
-
 
 interface Article {
   title: string;
@@ -41,7 +41,6 @@ interface Article {
   like: number;
   readStatus: boolean;
   likesBy: string[] | null;
-
 }
 
 interface NewsFeedProps {
@@ -50,22 +49,24 @@ interface NewsFeedProps {
   categoryName?: string;
 }
 
-interface idProps{
-  id: string; 
+interface idProps {
+  id: string;
 }
-export default function CategoryFeed({ articles, id , categoryName}: NewsFeedProps & idProps) {
- 
+export default function CategoryFeed({
+  articles,
+  id,
+  categoryName,
+}: NewsFeedProps & idProps) {
   const router = useRouter();
-  const params = useParams(); 
+  const params = useParams();
   const categoryId = params.id;
   const [categoryTitle, setCategoryTitle] = useState<string | null>(null);
 
-   //search query 
-   const [searchQuery, setSearchQuery] = useState('');
- 
+  //search query
+  const [searchQuery, setSearchQuery] = useState("");
 
-   // Filter displayed articles (keep original implementation)
-   const filteredArticles = articles.filter(article => {
+  // Filter displayed articles (keep original implementation)
+  const filteredArticles = articles.filter((article) => {
     const query = searchQuery.toLowerCase();
     return (
       article.title.toLowerCase().includes(query) ||
@@ -73,35 +74,36 @@ export default function CategoryFeed({ articles, id , categoryName}: NewsFeedPro
     );
   });
 
-// fetch categoryName
-useEffect(() => {
-  const fetchCategory = async () => {
-    try {
-      const collectionRef = collection(firestoreDb, "categoryPreferences");
-      const q = query(collectionRef, where("categoryNewsId", "==", categoryId));
-      const querySnapshot = await getDocs(q);
+  // fetch categoryName
+  useEffect(() => {
+    const fetchCategory = async () => {
+      try {
+        const collectionRef = collection(firestoreDb, "categoryPreferences");
+        const q = query(
+          collectionRef,
+          where("categoryNewsId", "==", categoryId)
+        );
+        const querySnapshot = await getDocs(q);
 
-      if (!querySnapshot.empty) {
-        // Get the first matching document
-        const docSnap = querySnapshot.docs[0];
-        const categoryData = docSnap.data();
-        setCategoryTitle(categoryData.name);
-      } else {
-        console.log("No matching document found!");
+        if (!querySnapshot.empty) {
+          // Get the first matching document
+          const docSnap = querySnapshot.docs[0];
+          const categoryData = docSnap.data();
+          setCategoryTitle(categoryData.name);
+        } else {
+          console.log("No matching document found!");
+          setCategoryTitle(null);
+        }
+      } catch (error) {
+        console.error("Error fetching category:", error);
         setCategoryTitle(null);
       }
-    } catch (error) {
-      console.error("Error fetching category:", error);
-      setCategoryTitle(null);
+    };
+
+    if (categoryId) {
+      fetchCategory();
     }
-  };
-
-  if (categoryId) {
-    fetchCategory();
-  }
-}, [categoryId]);
-
-  
+  }, [categoryId]);
 
   // Article Modal
   const [selectedArticle, setSelectedArticle] = useState<any>(null);
@@ -123,9 +125,8 @@ useEffect(() => {
   };
 
   const handleRefreshClick = () => {
-    router.push(`/newsupdatecategory/${categoryId}`)
-
-  }
+    router.push(`/newsupdatecategory/${categoryId}`);
+  };
 
   useEffect(() => {
     const handleArticleClickEvent = (e: any) => {
@@ -139,125 +140,138 @@ useEffect(() => {
     };
   }, []);
   return (
-<div className="flex w-full h-screen">
-    <SidebarComponent activeTab="categories" setActiveTab={() => {}} /> {/* Main Content - Scrollable area */}
-    <div className="flex-1 flex flex-col overflow-hidden ml-24 p-4">
+    <div className="flex w-full h-screen">
+      <SidebarComponent activeTab="categories" setActiveTab={() => {}} />{" "}
+      {/* Main Content - Scrollable area */}
+      <div className="flex-1 flex flex-col overflow-hidden ml-24 p-4">
         {/* Header */}
         <header className="flex items-center justify-between p-4 border-b dark:border-gray-700 bg-white dark:bg-gray-800">
+          <Button
+            variant="default"
+            className="bg-blue-950 hover:bg-blue-900"
+            onClick={() => setIsCategoryModalOpen(true)}
+          >
+            Create Category
+          </Button>
+
+          {/* Update search input JSX */}
+          <div className="relative w-full max-w-md mx-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+              <Input
+                type="text"
+                placeholder="Search"
+                className="pl-10 bg-gray-100 dark:bg-gray-700 border-none"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-4">
             <Button
-                variant="default"
-                className="bg-blue-950 hover:bg-blue-900"
-                onClick={() => setIsCategoryModalOpen(true)}
+              variant="default"
+              className="bg-blue-950 hover:bg-blue-900"
+              onClick={() => setIsReadSpeedModalOpen(true)}
             >
-                Create Category
-            </Button>
-
-                       {/* Update search input JSX */}
-  <div className="relative w-full max-w-md mx-4">
-   
-   <div className="relative">
-     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-     <Input
-       type="text"
-       placeholder="Search"
-       className="pl-10 bg-gray-100 dark:bg-gray-700 border-none"
-       value={searchQuery}
-       onChange={(e) => setSearchQuery(e.target.value)}
-     />
-   </div>
- 
-</div>
-
-            <div className="flex items-center space-x-4">
-            <Button variant="default"  className="bg-blue-950 hover:bg-blue-900" 
-            onClick={() => setIsReadSpeedModalOpen(true)}>
               Add Reading Speed
             </Button>
-                <Button variant="ghost" size="icon" className="rounded-full" onClick={() => handleRefreshClick()}>
-                    <RefreshCw className="h-5 w-5" />
-                </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full"
+              onClick={() => handleRefreshClick()}
+            >
+              <RefreshCw className="h-5 w-5" />
+            </Button>
 
-                <SignedOut>
-                    <SignInButton>
-                        <Button className="bg-transparent border border-white-500 text-white hover:bg-white/50">
-                            Sign In
-                        </Button>
-                    </SignInButton>
-                    <SignUpButton>
-                        <Button variant="secondary" className="bg-white text-black hover:bg-white/50">
-                            Sign Up
-                        </Button>
-                    </SignUpButton>
-                </SignedOut>
-                <SignedIn>
-                    <UserButton />
-                </SignedIn>
-            </div>
+            <SignedOut>
+              <SignInButton>
+                <Button className="bg-transparent border border-white-500 text-white hover:bg-white/50">
+                  Sign In
+                </Button>
+              </SignInButton>
+              <SignUpButton>
+                <Button
+                  variant="secondary"
+                  className="bg-white text-black hover:bg-white/50"
+                >
+                  Sign Up
+                </Button>
+              </SignUpButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
+          </div>
         </header>
 
         {/* Content - Independently scrollable */}
         <main className="flex-1 overflow-y-auto bg-white dark:bg-gray-800 p-6">
-            <div className="flex justify-between items-center mb-6 px-3">
-                <div>
-                    <h2 className="text-2xl font-bold">Category Title:   <span className="mx-2">{categoryTitle}</span></h2>
-                </div>
-
+          <div className="flex justify-between items-center mb-6 px-3">
+            <div>
+              <h2 className="text-2xl font-bold">
+                Category Title: <span className="mx-2">{categoryTitle}</span>
+              </h2>
             </div>
+          </div>
 
-               {/* Search results info */}
-           {searchQuery && (
-              <div className="px-3 mb-4 text-sm text-gray-600 dark:text-gray-400">
-                Showing {filteredArticles.length} results for "{searchQuery}"
-              </div>
-            )}
+          {/* Search results info */}
+          {searchQuery && (
+            <div className="px-3 mb-4 text-sm text-gray-600 dark:text-gray-400">
+              Showing {filteredArticles.length} results for "{searchQuery}"
+            </div>
+          )}
 
-            {/* Trending Section */}
-            <section className="mb-8">
-
-                <div className="space-y-6">
-                {filteredArticles.map((article, index) => {
-    const originalIndex = articles.findIndex(a => a.url === article.url);
-    return (
-      <ArticleCard
-        key={originalIndex}
-        id={id}
-        arrayIndex={originalIndex}  // Pass original index
-        summary={article.summary}
-        image={article.urlToImage || "/placeholder.svg"}
-        title={article.title}
-        timePosted={new Date(article.publishedAt).toLocaleString()}
-        readTime="Click to get read time"
-        source={article.url}
-        preview={article.description || "Click to read more..."}
-        like={article.like}
-        readStatus={article.readStatus}
-        openAiCollectionName="news"
-        likesBy={Array.isArray(article.likesBy) ? article.likesBy : null}
-      />
-    );
-  })}
-                </div>
-            </section>
+          {/* Trending Section */}
+          <section className="mb-8">
+            <div className="space-y-6">
+              {filteredArticles.map((article, index) => {
+                const originalIndex = articles.findIndex(
+                  (a) => a.url === article.url
+                );
+                return (
+                  <ArticleCard
+                    key={originalIndex}
+                    id={id}
+                    arrayIndex={originalIndex} // Pass original index
+                    summary={article.summary}
+                    image={article.urlToImage || "/placeholder.svg"}
+                    title={article.title}
+                    timePosted={new Date(article.publishedAt).toLocaleString()}
+                    readTime="Click to get read time"
+                    source={article.url}
+                    preview={article.description || "Click to read more..."}
+                    like={article.like}
+                    readStatus={article.readStatus}
+                    openAiCollectionName="news"
+                    likesBy={
+                      Array.isArray(article.likesBy) ? article.likesBy : null
+                    }
+                  />
+                );
+              })}
+            </div>
+          </section>
         </main>
-    </div>
-    <ArticleCategoryModal
+      </div>
+      <ArticleCategoryModal
         article={selectedArticle}
         isOpen={isArticleModalOpen}
         onClose={() => setIsArticleModalOpen(false)}
         collectionName="categoryNews"
         categoryNewsId={String(categoryId)}
-    />
-    <CreateCategoryModal
+      />
+      <CreateCategoryModal
         isOpen={isCategoryModalOpen}
         onClose={() => setIsCategoryModalOpen(false)}
         onCreateCategory={handleCreateCategory}
-    />
-
+      />
       <CreateReadSpeedModal
-            isOpen={isReadSpeedModalOpen}
-            onClose={() => setIsReadSpeedModalOpen(false)}
-          />{" "}
-</div>
+        isOpen={isReadSpeedModalOpen}
+        onClose={() => setIsReadSpeedModalOpen(false)}
+      />{" "}
+    </div>
   );
 }
 
@@ -275,11 +289,24 @@ interface ArticleCardProps {
   readStatus: boolean;
   openAiCollectionName: string;
   likesBy: string[] | null;
-
 }
 
-function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, source, preview, like, readStatus, id, openAiCollectionName, likesBy}: ArticleCardProps & idProps) {
-  const {userId} = useAuth()
+function ArticleCard({
+  arrayIndex,
+  summary,
+  image,
+  title,
+  timePosted,
+  readTime,
+  source,
+  preview,
+  like,
+  readStatus,
+  id,
+  openAiCollectionName,
+  likesBy,
+}: ArticleCardProps & idProps) {
+  const { userId } = useAuth();
   const handleClick = () => {
     // Get the parent component's handleArticleClick function
     const article = {
@@ -297,7 +324,7 @@ function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, s
       like,
       readStatus,
       openAiCollectionName,
-      likesBy
+      likesBy,
     };
 
     // Find the NewsFeed component and call its handleArticleClick function
@@ -323,7 +350,6 @@ function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, s
         <div className="flex justify-between items-start">
           <h4 className="text-lg font-bold mb-1 pr-2">{title}</h4>
           <div className="flex items-center gap-1 flex-shrink-0">
-           
             <Button
               variant="ghost"
               size="icon"
@@ -367,20 +393,18 @@ function ArticleCard({arrayIndex, summary, image, title, timePosted, readTime, s
 
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1">
-          {userId && likesBy?.includes(userId) ? (
-            <Button variant="ghost" size="sm" className="gap-2">
-            <ThumbsUp className="h-4 w-4 fill-blue-500 stroke-blue-500" />             
-             {like}
-            </Button>
+            {userId && likesBy?.includes(userId) ? (
+              <Button variant="ghost" size="sm" className="gap-2">
+                <ThumbsUp className="h-4 w-4 fill-blue-500 stroke-blue-500" />
+                {like}
+              </Button>
             ) : (
               <Button variant="ghost" size="sm" className="gap-2">
-              <ThumbsUp className="h-4 w-4" />
-              {like}
+                <ThumbsUp className="h-4 w-4" />
+                {like}
               </Button>
             )}
           </div>
-
-      
 
           <Button variant="ghost" size="sm" className="h-8 px-2">
             <Share2 className="h-4 w-4 mr-1" />

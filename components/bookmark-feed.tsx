@@ -156,15 +156,14 @@ export default function BookmarkFeed({
             </div>
           </div>
 
-           {/* Search results info */}
-           {searchQuery && (
-              <div className="px-3 mb-4 text-sm text-gray-600 dark:text-gray-400">
-                Showing {filteredArticles.length} results for "{searchQuery}"
-              </div>
-            )}
+          {/* Search results info */}
+          {searchQuery && (
+            <div className="px-3 mb-4 text-sm text-gray-600 dark:text-gray-400">
+              Showing {filteredArticles.length} results for "{searchQuery}"
+            </div>
+          )}
 
-
-{/* 
+          {/* 
           {filteredArticles.map((article, index) => {
     const originalIndex = articles.findIndex(a => a.url === article.url);
     return (
@@ -192,26 +191,28 @@ export default function BookmarkFeed({
             <div className="space-y-6">
               {articles && articles.length > 0 ? (
                 filteredArticles.map((article, index) => {
-                  const originalIndex = articles.findIndex(a => a.source === article.source);
-                  return(
-                  <ArticleCard
-                    key={index}
-                    id={id}
-                    arrayIndex={index}
-                    summary={article.summary}
-                    image={article.image || "/placeholder.svg"}
-                    title={article.title}
-                    timePosted={new Date(article.timePosted).toLocaleString()}
-                    readTime="Click to get read time"
-                    source={article.source}
-                    preview={article.content || "Click to read more..."}
-                    like={article.like}
-                    readStatus={article.readStatus}
-                    openAiCollectionName="bookmarks"
-                    likesBy={
-                      Array.isArray(article.likesBy) ? article.likesBy : null
-                    }
-                  />
+                  const originalIndex = articles.findIndex(
+                    (a) => a.source === article.source
+                  );
+                  return (
+                    <ArticleCard
+                      key={index}
+                      id={id}
+                      arrayIndex={index}
+                      summary={article.summary}
+                      image={article.image || "/placeholder.svg"}
+                      title={article.title}
+                      timePosted={new Date(article.timePosted).toLocaleString()}
+                      readTime="Click to get read time"
+                      source={article.source}
+                      preview={article.content || "Click to read more..."}
+                      like={article.like}
+                      readStatus={article.readStatus}
+                      openAiCollectionName="bookmarks"
+                      likesBy={
+                        Array.isArray(article.likesBy) ? article.likesBy : null
+                      }
+                    />
                   );
                 })
               ) : (
