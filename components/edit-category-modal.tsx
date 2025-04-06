@@ -25,6 +25,7 @@ import { useAuth } from '@clerk/nextjs'
 import { v4 as uuidv4 } from 'uuid'
 import { getDoc, doc } from 'firebase/firestore'
 import { firestoreDb } from '@/app/firebase/firebase'
+import { Textarea } from './ui/textarea'
 
 
 interface EditCategoryModalProps {
@@ -32,6 +33,7 @@ interface EditCategoryModalProps {
     onClose: () => void 
     onCreateCategory: (category: {
         name: string
+        categoryDescription: string
         uid: string
         source: string[]
         includeKeyword: string[]
@@ -58,6 +60,7 @@ export default function EditCategoryModal({isOpen, onClose, onCreateCategory, id
     const userIdString = userId || ''
     const categoryNewsId = uuidv4()
     const [name, setName] = useState("")
+    const [description, setDescription] = useState("")
     const [sourcesOpen, setSourcesOpen] = useState(false)
     const [selectedSources, setSelectedSources] = useState<string[]>([])
     const [includeKeyword, setIncludeKeyword] = useState<string>("")
@@ -81,6 +84,7 @@ export default function EditCategoryModal({isOpen, onClose, onCreateCategory, id
 
                     // Populate form with existing data
                     setName(categoryData.name || "")
+                    setDescription(categoryData.categoryDescription || "")
                     setSelectedSources(categoryData.source || [])
                     setIncludeKeywords(categoryData.includeKeyword || [])
                     setExcludeKeywords(categoryData.excludeKeyword || [])
@@ -98,6 +102,7 @@ export default function EditCategoryModal({isOpen, onClose, onCreateCategory, id
         e.preventDefault()
         const category = {
             name: name,
+            categoryDescription: description,
             uid: userIdString,
             source: selectedSources,
             includeKeyword: includeKeywords,
@@ -116,11 +121,13 @@ export default function EditCategoryModal({isOpen, onClose, onCreateCategory, id
     const resetForm = () => {
         if (existingCategoryData) {
             setName(existingCategoryData.name || "")
+            setDescription(existingCategoryData.categoryDescription || "")
             setSelectedSources(existingCategoryData.source || [])
             setIncludeKeywords(existingCategoryData.includeKeyword || [])
             setExcludeKeywords(existingCategoryData.excludeKeyword || [])
         } else {
             setName("")
+            setDescription("")
             setSelectedSources([])
             setIncludeKeyword("")
             setExcludeKeyword("")
@@ -183,6 +190,16 @@ export default function EditCategoryModal({isOpen, onClose, onCreateCategory, id
                                 className="bg-white text-gray-800 h-14 text-lg"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <Textarea
+                                placeholder="Category Description"
+                                className="bg-white text-gray-800 h-14 text-lg"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
                                 required
                             />
                         </div>

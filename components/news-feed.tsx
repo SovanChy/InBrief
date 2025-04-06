@@ -108,7 +108,7 @@ export default function NewsFeed({ articles, id }: NewsFeedProps & idProps) {
   }, []);
   return (
   <div className="flex w-full h-screen">
-        <SidebarComponent activeTab="home" setActiveTab={() => {}} />           {/* Main Content - Scrollable area */}
+        <SidebarComponent activeTab="news" setActiveTab={() => {}} />           {/* Main Content - Scrollable area */}
       <div className="flex-1 flex flex-col overflow-hidden ml-24 p-4">
         {/* Header */}
         <header className="flex items-center justify-between p-4 border-b dark:border-gray-700 bg-white dark:bg-gray-800">
@@ -171,15 +171,20 @@ export default function NewsFeed({ articles, id }: NewsFeedProps & idProps) {
 
         {/* Content - Independently scrollable */}
         <main className="flex-1 overflow-y-auto bg-white dark:bg-gray-800 p-6">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-6 px-3">
             <div>
-              <h2 className="text-2xl font-bold">Explore</h2>
+              <h2 className="text-2xl font-bold">Latest</h2>
             </div>
           </div>
 
           {/* Trending Section */}
           <section className="mb-8">
-            <h3 className="text-xl text-gray-500 mb-4">Latest</h3>
+            {/* Search results info */}
+            {searchQuery && (
+              <div className="px-3 mb-4 text-sm text-gray-600 dark:text-gray-400">
+                Showing {filteredArticles.length} results for "{searchQuery}"
+              </div>
+            )}
 
             <div className="space-y-6">
             {filteredArticles.map((article, index) => {

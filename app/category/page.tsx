@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import SidebarComponent from "@/components/sidebar";
 import { useState } from "react";
 import { Edit, MoreHorizontal, Trash2, CheckCircle } from "lucide-react";
@@ -49,6 +49,40 @@ const Category = () => {
   const {deleteDataWithCategoryNewsId} = AddFireStoreData("categoryPreferences");
   const [isReadSpeedModalOpen, setIsReadSpeedModalOpen] = useState(false);
 
+    //search query 
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredCategories, setFilteredCategories] = useState<DocumentData[]>([]);
+
+    useEffect(() => {
+      if (data && Array.isArray(data)) {
+        setCategoriesData(data);
+        setFilteredCategories(data);
+      }
+    }, [data]);
+
+    // Update filtered categories when search query changes
+  useEffect(() => {
+    if (searchQuery.trim() === '') {
+      setFilteredCategories(categoriesData);
+    } else {
+      const filtered = categoriesData.filter(category => {
+        const query = searchQuery.toLowerCase();
+        return (
+          category.name.toLowerCase().includes(query) ||
+          (category.description?.toLowerCase()?.includes(query) ?? false) ||
+          (category.source?.some((src: string) => src.toLowerCase().includes(query)) ||
+          (category.includeKeyword?.some((kw: string) => kw.toLowerCase().includes(query)) ||
+          (category.excludeKeyword?.some((kw: string) => kw.toLowerCase().includes(query))))
+        ));
+      });
+      setFilteredCategories(filtered);
+    }
+  }, [searchQuery, categoriesData]);
+
+ 
+
+   
+
   
 
 
@@ -65,17 +99,17 @@ const Category = () => {
     console.log("Created category:", category);
   };
 
-  // const handleShareCategory = (categoryNewsId: string) => {
-  //   const website = window.location.origin; // Gets the base URL dynamically
-  //   const link = `${website}/category/${categoryNewsId}`;    
-  //   navigator.clipboard.writeText(link).then(() => {
-  //   console.log("Link copied to clipboard:", link);
-  //   setAlert(true)
-  //   setTimeout(() => setAlert(false), 1500)
-  //   }).catch((err) => {
-  //     console.error("Failed to copy link to clipboard:", err);
-  //   });
-  // };
+  const handleShareCategory = (categoryNewsId: string) => {
+    const website = window.location.origin; // Gets the base URL dynamically
+    const link = `${website}/category/${categoryNewsId}`;    
+    navigator.clipboard.writeText(link).then(() => {
+    console.log("Link copied to clipboard:", link);
+    setAlert(true)
+    setTimeout(() => setAlert(false), 1500)
+    }).catch((err) => {
+      console.error("Failed to copy link to clipboard:", err);
+    });
+  };
 
   const onDelete = (index: string) => {
     deleteDataWithCategoryNewsId(index)
@@ -108,13 +142,18 @@ const Category = () => {
             Create Category
           </Button>
 
+          {/* Update search input JSX */}
           <div className="relative w-full max-w-md mx-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-            <Input
-              type="text"
-              placeholder="Search"
-              className="pl-10 bg-gray-100 dark:bg-gray-700 border-none"
-            />
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+              <Input
+                type="text"
+                placeholder="Search Categories"
+                className="pl-10 bg-gray-100 dark:bg-gray-700 border-none"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
 
           <div className="flex items-center space-x-4">
@@ -143,8 +182,33 @@ const Category = () => {
           </div>
         </header>
         <h1 className="text-2xl font-bold ml-3 mt-3 mb-3">Categories</h1>
-        {categoriesData &&
-          categoriesData.map((item: any) => (
+
+         
+            {/* Search results info */}
+            {searchQuery && (
+              <div className="px-3 mb-4 text-sm text-gray-600 dark:text-gray-400">
+                Showing {filteredCategories.length} results for "{searchQuery}"
+              </div>
+            )}
+
+            {/* Category list rendering */}
+            {filteredCategories.length > 0 ? (
+              filteredCategories.map((item: any) => (
+                <div key={item.id}>
+                  {/* ... (keep your existing card rendering) */}
+                </div>
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12">
+                <Search className="h-12 w-12 text-gray-400 mb-4" />
+                <h3 className="text-lg font-medium text-gray-600 dark:text-gray-400">
+                  {searchQuery ? "No categories match your search" : "No categories found"}
+                </h3>
+              </div>
+            )}
+       
+        {filteredCategories && 
+          filteredCategories.map((item: any) => (
             <div key={item.id}>
               <Card
                 className="bg-blue-950 overflow-hidden transition-all hover:shadow-md mb-3"
@@ -158,6 +222,9 @@ const Category = () => {
                       router.push(`/newsfetchcategory/${item.categoryNewsId}`)
                       }
                     >
+                       <h1 className="text-xl font-bold text-gray-200 dark:text-gray-400 mb-2">
+                        Title
+                      </h1>
                     <div className="bg-white border border-gray-300 rounded-md px-4 py-2 w-full focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 shadow-sm hover:border-gray-400 transition-colors">
                       {item.name} 
                     </div>
@@ -184,7 +251,7 @@ const Category = () => {
                           <Edit className="h-4 w-4 mr-2" />
                           Edit
                         </DropdownMenuItem>
-                        {/* <DropdownMenuSeparator />
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem
                           className="cursor-pointer"
                           onClick={() => {
@@ -194,7 +261,7 @@ const Category = () => {
                         
                           <Edit className="h-4 w-4 mr-2" />
                           Share
-                        </DropdownMenuItem> */}
+                        </DropdownMenuItem>
                         
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
@@ -207,6 +274,14 @@ const Category = () => {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
+                  <CardDescription className="text-md text-gray-1000 mt-2">
+                  <h3 className="text-md font-medium text-gray-200 dark:text-gray-400 mb-2">
+                        Description
+                      </h3>
+                    <div className="bg-white border border-gray-300 rounded-md px-4 py-2 w-full focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 shadow-sm hover:border-gray-400 transition-colors">
+                    {item.categoryDescription}
+                    </div>
+                    </CardDescription>
                 </CardHeader>
                 <CardContent >
                   <div className="space-y-3">

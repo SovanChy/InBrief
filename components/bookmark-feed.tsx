@@ -150,11 +150,18 @@ export default function BookmarkFeed({
 
         {/* Content - Independently scrollable */}
         <main className="flex-1 overflow-y-auto bg-white dark:bg-gray-800 p-6">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-6 px-3">
             <div>
               <h2 className="text-2xl font-bold">Bookmark</h2>
             </div>
           </div>
+
+           {/* Search results info */}
+           {searchQuery && (
+              <div className="px-3 mb-4 text-sm text-gray-600 dark:text-gray-400">
+                Showing {filteredArticles.length} results for "{searchQuery}"
+              </div>
+            )}
 
 
 {/* 

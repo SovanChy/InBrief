@@ -2,8 +2,6 @@
 import { useState, useEffect } from "react";
 import {
   Clock,
-  Filter,
-  MessageSquare,
   RefreshCw,
   Search,
   Share2,
@@ -27,7 +25,9 @@ import SidebarComponent from "./sidebar";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import Category from "@/app/category/page";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth } from  "@clerk/nextjs";
+import { doc, collection, getDocs, getDoc, query, onSnapshot, where } from "firebase/firestore";
+import { firestoreDb } from "@/app/firebase/firebase";
 
 
 
@@ -58,6 +58,7 @@ export default function CategoryFeed({ articles, id , categoryName}: NewsFeedPro
   const router = useRouter();
   const params = useParams(); 
   const categoryId = params.id;
+  const [categoryTitle, setCategoryTitle] = useState<string | null>(null);
 
    //search query 
    const [searchQuery, setSearchQuery] = useState('');
@@ -72,6 +73,33 @@ export default function CategoryFeed({ articles, id , categoryName}: NewsFeedPro
     );
   });
 
+// fetch categoryName
+useEffect(() => {
+  const fetchCategory = async () => {
+    try {
+      const collectionRef = collection(firestoreDb, "categoryPreferences");
+      const q = query(collectionRef, where("categoryNewsId", "==", categoryId));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        // Get the first matching document
+        const docSnap = querySnapshot.docs[0];
+        const categoryData = docSnap.data();
+        setCategoryTitle(categoryData.name);
+      } else {
+        console.log("No matching document found!");
+        setCategoryTitle(null);
+      }
+    } catch (error) {
+      console.error("Error fetching category:", error);
+      setCategoryTitle(null);
+    }
+  };
+
+  if (categoryId) {
+    fetchCategory();
+  }
+}, [categoryId]);
 
   
 
@@ -169,12 +197,19 @@ export default function CategoryFeed({ articles, id , categoryName}: NewsFeedPro
 
         {/* Content - Independently scrollable */}
         <main className="flex-1 overflow-y-auto bg-white dark:bg-gray-800 p-6">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-6 px-3">
                 <div>
-                    <h2 className="text-2xl font-bold">{categoryName}</h2>
+                    <h2 className="text-2xl font-bold">Category Title:   <span className="mx-2">{categoryTitle}</span></h2>
                 </div>
-                
+
             </div>
+
+               {/* Search results info */}
+           {searchQuery && (
+              <div className="px-3 mb-4 text-sm text-gray-600 dark:text-gray-400">
+                Showing {filteredArticles.length} results for "{searchQuery}"
+              </div>
+            )}
 
             {/* Trending Section */}
             <section className="mb-8">

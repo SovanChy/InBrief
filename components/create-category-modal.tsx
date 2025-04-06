@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { X, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Textarea } from './ui/textarea'
 import { 
   Command,
   CommandEmpty,
@@ -35,6 +36,7 @@ interface CreateCategoryModalProps {
         name: string
         uid: string
         categoryNewsId: string
+        categoryDescription: string
         source: string[]
         includeKeyword: string[]
         excludeKeyword: string[]
@@ -59,6 +61,7 @@ export default function CreateCategoryModal({isOpen, onClose, onCreateCategory} 
     const userIdString = userId || ''
     const categoryNewsId = uuidv4()
     const [name, setName] = useState("")
+    const [description, setDescription] = useState("")
     const [sourcesOpen, setSourcesOpen] = useState(false)
     const [selectedSources, setSelectedSources] = useState<string[]>([])
     const [includeKeyword, setIncludeKeyword] = useState<string>("")
@@ -73,6 +76,7 @@ export default function CreateCategoryModal({isOpen, onClose, onCreateCategory} 
             name: name,
             uid: userIdString,
             categoryNewsId: categoryNewsId,
+            categoryDescription: description,
             source: selectedSources,
             includeKeyword: includeKeywords,
             excludeKeyword: excludeKeywords,
@@ -86,6 +90,7 @@ export default function CreateCategoryModal({isOpen, onClose, onCreateCategory} 
 
     const resetForm = () => {
         setName("")
+        setDescription("")
         setSelectedSources([])
         setIncludeKeyword("")
         setExcludeKeyword("")
@@ -161,6 +166,16 @@ export default function CreateCategoryModal({isOpen, onClose, onCreateCategory} 
                         </div>
 
                         <div>
+                            <Textarea
+                                placeholder="Category Description"
+                                className="bg-white text-gray-800 h-14 text-lg"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                required
+                            />
+                        </div>
+
+                        <div>
                             <Popover open={sourcesOpen} onOpenChange={setSourcesOpen}>
                                 <PopoverTrigger asChild>
                                     <Button
@@ -197,15 +212,7 @@ export default function CreateCategoryModal({isOpen, onClose, onCreateCategory} 
                                                     {source.label}
                                                 </CommandItem>
                                             ))}
-                                            {/* <CommandItem >
-                                                <span>Hello</span>
-                                            </CommandItem>
-                                            <CommandItem >
-                                                <span>Hello</span>
-                                            </CommandItem>
-                                            <CommandItem >
-                                                <span>Hello</span>
-                                            </CommandItem>               */}
+                                           
                                         </CommandGroup>
                                         </CommandList>
                                     </Command>
