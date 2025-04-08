@@ -30,7 +30,7 @@ export default function Page() {
   
   // This return is unlikely to be rendered due to redirects
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-600">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-500 to-blue-900">
       <div className="text-center">
         <h1 className="text-4xl font-extrabold text-white mb-4 animate-pulse">Redirecting...</h1>
         <p className="text-lg text-white">Please wait while we take you to your destination.</p>

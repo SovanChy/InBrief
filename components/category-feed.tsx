@@ -211,7 +211,7 @@ export default function CategoryFeed({
           <div className="flex justify-between items-center mb-6 px-3">
             <div>
               <h2 className="text-2xl font-bold">
-                Category Title: <span className="mx-2">{categoryTitle}</span>
+                Category Title: <span>{categoryTitle}</span>
               </h2>
             </div>
           </div>

@@ -46,15 +46,17 @@ export default async function Page({ params }: { params: { id: string } }) {
   if (!storedNewsSnapshot.empty) {
     const firstDoc = storedNewsSnapshot.docs[0];
     data = firstDoc ? firstDoc.data() : null;
-    collectedCategoryName = data?.name || null;
     
     data = JSON.parse(JSON.stringify(data));
     loading = false;
+    console.log("storing old data")
   } else {
     const newsSnapshot = await db
       .collection("categoryPreferences")
       .where("categoryNewsId", "==", categoryNewsId)
       .get();
+
+      console.log("storing new data")
 
     if (!newsSnapshot.empty) {
       const categoryPreferences: CategoryPreference[] = newsSnapshot.docs.map(
@@ -117,7 +119,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           collectionName="categoryNews"
           categoryNewsId={categoryNewsId}
           redirectTo={`/category/${categoryNewsId}`}
-          categoryName={collectedCategoryName || ""}
+          categoryName={collectedCategoryName || ""} // Pass the collected category name
         />
       )}
     </div>

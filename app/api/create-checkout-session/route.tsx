@@ -14,7 +14,7 @@ export async function POST() {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [{
-        price: 'price_1RAZxbINPD1joVSm6liUWQdb', // Replace with your TEST price ID
+        price: 'price_1RAui4INPD1joVSmiWmSKcgw', // Replace with your TEST price ID
         quantity: 1,
       }],
       mode: 'subscription',

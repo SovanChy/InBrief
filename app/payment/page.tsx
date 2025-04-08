@@ -156,7 +156,7 @@ export default function PremiumPage() {
       
                   <div className="text-center my-6">
                     <div className="text-3xl font-bold">
-                      $14.90<span className="text-lg font-normal text-gray-500">/Month</span>
+                      $6.99<span className="text-lg font-normal text-gray-500">/Month</span>
                     </div>
                   </div>
                 </CardContent>
