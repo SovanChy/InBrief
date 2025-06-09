@@ -1,7 +1,8 @@
 # 📰 InBrief
 InBrief is a sleek, AI-assisted news aggregator built to streamline your reading experience. With customizable categories, advanced keyword filters, and OpenAI-powered summarization, InBrief ensures you stay informed—without the noise.
 
-##🚀 About
+## 🚀 About
+
 InBrief allows users to:
 
 ✅ Create and manage custom news categories based on interests
