@@ -1,3 +1,45 @@
+# 📰 InBrief
+InBrief is a sleek, AI-assisted news aggregator built to streamline your reading experience. With customizable categories, advanced keyword filters, and OpenAI-powered summarization, InBrief ensures you stay informed—without the noise.
+
+##🚀 About
+InBrief allows users to:
+
+✅ Create and manage custom news categories based on interests
+
+🔍 Fine-tune queries using selected sources, include/exclude keywords
+
+✨ Get concise summaries of full articles using OpenAI’s language model
+
+🔖 Bookmark favorite stories for later
+
+💬 Engage through comments, likes, and shares
+
+InBrief is designed for modern readers who want precision without overload—bringing relevant news directly to your feed, digestible in seconds.
+
+##📦 Tech Stack
+Frontend: Next.js 15, Tailwind CSS
+
+Authentication: Clerk
+
+Backend: Firebase Firestore
+
+API: NewsAPI
+
+AI Summarization: OpenAI (via ChatGPT)
+
+Other Tools: Axios, React hooks, Vercel (Deployment)
+
+
+## 🧠 Features
+🧩 Custom Categories
+Create categories with specific keywords, sources, and exclusions to fine-tune your feed.
+
+🤖 AI Summarization
+No time to read long articles? Let OpenAI condense them into quick summaries.
+
+
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
