@@ -17,7 +17,7 @@ InBrief allows users to:
 
 InBrief is designed for modern readers who want precision without overload—bringing relevant news directly to your feed, digestible in seconds.
 
-##📦 Tech Stack
+## 📦 Tech Stack
 Frontend: Next.js 15, Tailwind CSS
 
 Authentication: Clerk
